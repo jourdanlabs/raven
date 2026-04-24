@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "raven"
+version = "1.0.0"
+description = "AI memory built for trust. Own retrieval, own validation, own everything."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "click>=8.1",
+    "rich>=13.0",
+]
+
+[project.optional-dependencies]
+semantic = [
+    "sentence-transformers>=2.7",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[project.scripts]
+raven = "cli.raven:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--cov=raven --cov-report=term-missing"
+
+[tool.hatch.build.targets.wheel]
+packages = ["raven", "cli"]

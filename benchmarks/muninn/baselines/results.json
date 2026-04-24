@@ -1,0 +1,380 @@
+[
+  {
+    "baseline": "raw_passthrough",
+    "overall_f1": 0.7625,
+    "overall_status_accuracy": 0.875,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 0.5,
+        "mean_precision": 0.33333333333333326,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 0.0,
+        "mean_precision": 0.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 0.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      }
+    ]
+  },
+  {
+    "baseline": "recency_filter",
+    "overall_f1": 0.7625,
+    "overall_status_accuracy": 0.875,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 0.5,
+        "mean_precision": 0.33333333333333326,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 0.0,
+        "mean_precision": 0.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 0.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      }
+    ]
+  },
+  {
+    "baseline": "simulated_zep",
+    "overall_f1": 0.7625,
+    "overall_status_accuracy": 0.875,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 0.5,
+        "mean_precision": 0.33333333333333326,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 0.0,
+        "mean_precision": 0.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 0.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      }
+    ]
+  },
+  {
+    "baseline": "simulated_mem0",
+    "overall_f1": 0.5358333333333334,
+    "overall_status_accuracy": 0.705,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 0.3,
+        "mean_precision": 1.0,
+        "mean_recall": 0.2,
+        "status_accuracy": 0.6
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 0.04,
+        "mean_precision": 1.0,
+        "mean_recall": 0.04,
+        "status_accuracy": 0.04
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 0.48,
+        "mean_precision": 1.0,
+        "mean_recall": 0.32,
+        "status_accuracy": 0.96
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 0.7066666666666666,
+        "mean_precision": 1.0,
+        "mean_recall": 0.56,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.72,
+        "mean_precision": 1.0,
+        "mean_recall": 0.58,
+        "status_accuracy": 1.0
+      }
+    ]
+  },
+  {
+    "baseline": "raven_retrieval_only",
+    "overall_f1": 0.7625,
+    "overall_status_accuracy": 0.875,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 0.5,
+        "mean_precision": 0.33333333333333326,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 0.0,
+        "mean_precision": 0.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 0.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 0.6666666666666665,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      }
+    ]
+  },
+  {
+    "baseline": "raven_full",
+    "overall_f1": 0.889,
+    "overall_status_accuracy": 0.94,
+    "per_hazard": [
+      {
+        "hazard_mode": "causal_coherence",
+        "n": 25,
+        "mean_f1": 0.812,
+        "mean_precision": 1.0,
+        "mean_recall": 0.7066666666666666,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "clean",
+        "n": 50,
+        "mean_f1": 0.86,
+        "mean_precision": 1.0,
+        "mean_recall": 0.86,
+        "status_accuracy": 0.86
+      },
+      {
+        "hazard_mode": "contradiction",
+        "n": 25,
+        "mean_f1": 0.8,
+        "mean_precision": 1.0,
+        "mean_recall": 0.8,
+        "status_accuracy": 0.8
+      },
+      {
+        "hazard_mode": "entity_resolution",
+        "n": 25,
+        "mean_f1": 0.94,
+        "mean_precision": 1.0,
+        "mean_recall": 0.9066666666666667,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "importance_inversion",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "refusal_warranted",
+        "n": 25,
+        "mean_f1": 1.0,
+        "mean_precision": 1.0,
+        "mean_recall": 1.0,
+        "status_accuracy": 1.0
+      },
+      {
+        "hazard_mode": "staleness",
+        "n": 25,
+        "mean_f1": 0.84,
+        "mean_precision": 1.0,
+        "mean_recall": 0.76,
+        "status_accuracy": 1.0
+      }
+    ]
+  }
+]
