@@ -36,6 +36,7 @@ from benchmarks.longmemeval.scorer import (
     aggregate,
     score_question,
 )
+from benchmarks.longmemeval.scorers import DEFAULT_SCORER, get_ranker
 
 
 def _turn_text(role: str, content: str) -> str:
@@ -79,12 +80,18 @@ def run_one(
     q: LMEQuestion,
     top_k: int = 20,
     calibration_profile: str = "factual",
+    scorer: str = DEFAULT_SCORER,
 ) -> QuestionResult:
     """Run RAVEN against a single LongMemEval question.
 
     Phase 2.1: ``calibration_profile`` selects the AURORA threshold.
     Defaults to ``"factual"`` so the v1.0 cold-run baseline is exactly
     reproducible.
+
+    Phase 2.2 fix-02 (LME-012): ``scorer`` selects the ranking applied
+    to ``(approved + rejected)`` before substring scoring. Default
+    ``"retrieval_ranked"`` reproduces v1.2.1 numbers byte-for-byte;
+    ``"composite_ranked"`` makes AURORA's gate decision visible to A@k.
     """
     store = RAVENStore(":memory:")
     pipeline = RAVENPipeline(
@@ -110,11 +117,17 @@ def run_one(
     response = pipeline.recall(q.question, now=now_override)
 
     # Build ranked memory list. RAVEN returns approved + rejected after
-    # AURORA gating; for retrieval-style scoring we want the full ranked
-    # set as RAVEN saw it. We rank by retrieval_score (already backfilled
-    # onto ScoredMemory) over (approved + rejected), descending.
-    scored = list(response.approved_memories) + list(response.rejected_memories)
-    scored.sort(key=lambda sm: sm.retrieval_score, reverse=True)
+    # AURORA gating; the *scorer* chooses how the union is ordered before
+    # substring scoring. ``retrieval_ranked`` (default) mirrors the
+    # v1.2.1 inline sort: rank by retrieval_score descending, ignoring
+    # the AURORA gate. ``composite_ranked`` (Phase 2.2 fix-02 / LME-012)
+    # ranks by retrieval_score × aurora_weight, propagating the gate
+    # into A@k.
+    rank_fn = get_ranker(scorer)
+    scored = rank_fn(
+        approved=response.approved_memories,
+        rejected=response.rejected_memories,
+    )
 
     ranked_memory_keys: list[str] = []
     ranked_memory_texts: list[str] = []
@@ -147,6 +160,7 @@ def run_all(
     top_k: int = 20,
     progress_every: int = 25,
     calibration_profile: str = "factual",
+    scorer: str = DEFAULT_SCORER,
 ) -> list[QuestionResult]:
     results: list[QuestionResult] = []
     t0 = time.perf_counter()
@@ -154,6 +168,7 @@ def run_all(
         try:
             results.append(run_one(
                 q, top_k=top_k, calibration_profile=calibration_profile,
+                scorer=scorer,
             ))
         except Exception as exc:  # noqa: BLE001
             # Record failure; do not abort the whole run.
@@ -245,6 +260,16 @@ def main() -> int:
         "--profile", type=str, default="factual",
         help="Calibration profile name (factual | chat_turn | ...).",
     )
+    parser.add_argument(
+        "--scorer", type=str, default=DEFAULT_SCORER,
+        choices=["retrieval_ranked", "composite_ranked"],
+        help=(
+            "Scorer variant. retrieval_ranked (default) reproduces the "
+            "v1.2.1 published numbers byte-for-byte. composite_ranked "
+            "(Phase 2.2 fix-02 / LME-012) ranks by retrieval_score * "
+            "aurora_weight so AURORA's gate decision is visible to A@k."
+        ),
+    )
     parser.add_argument("--output", type=str, default=None,
                         help="Write per-question + aggregate JSON here")
     parser.add_argument("--quiet", action="store_true")
@@ -255,7 +280,7 @@ def main() -> int:
         questions = questions[: args.limit]
 
     if not args.quiet:
-        print(f"\nLongMemEval · RAVEN run · profile={args.profile}")
+        print(f"\nLongMemEval · RAVEN run · profile={args.profile} · scorer={args.scorer}")
         print(f"  N = {len(questions)} questions")
         print(f"  top_k = {args.top_k}")
         print(f"  embedder = TFIDFEmbedder (lexical-only)")
@@ -263,6 +288,7 @@ def main() -> int:
     t0 = time.perf_counter()
     results = run_all(
         questions, top_k=args.top_k, calibration_profile=args.profile,
+        scorer=args.scorer,
     )
     elapsed = time.perf_counter() - t0
 
@@ -279,6 +305,7 @@ def main() -> int:
             "embedder": "TFIDFEmbedder",
             "raven_version": "1.1.0",
             "calibration_profile": args.profile,
+            "scorer": args.scorer,
         }
         Path(args.output).write_text(json.dumps(out, indent=2))
         print(f"  wrote {args.output}")
