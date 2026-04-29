@@ -98,7 +98,16 @@ def run_one(
         store.ingest(e)
 
     # Recall.
-    response = pipeline.recall(q.question)
+    # Phase 2.2 fix-01: pass corpus-relative ``now`` (the question's own
+    # timestamp) so ECLIPSE decay computes against the corpus time origin
+    # instead of wall-clock. Without this, LongMemEval haystacks dated
+    # 2023-2024 replayed in 2026 see decay weight ~1e-7 and the AURORA
+    # composite collapses below any approval-quality-preserving threshold.
+    # See ``docs/phase2.2/fixes/01_now_override.md`` and GAPS.md LME-010.
+    # Falls back to wall-clock if the corpus didn't ship a parseable
+    # question_date (rare; ``_parse_date`` returns 0.0 in that case).
+    now_override = q.question_timestamp if q.question_timestamp else None
+    response = pipeline.recall(q.question, now=now_override)
 
     # Build ranked memory list. RAVEN returns approved + rejected after
     # AURORA gating; for retrieval-style scoring we want the full ranked
