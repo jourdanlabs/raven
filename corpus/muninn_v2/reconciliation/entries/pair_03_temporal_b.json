@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Bulma"
+  ],
+  "id": "pair_03_temporal_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_03_temporal",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Bulma never uses the default sonnet model entirely for inference",
+  "timestamp": 1735430400.0,
+  "topic_tags": [
+    "config",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735430400.0
+}

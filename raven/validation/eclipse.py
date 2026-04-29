@@ -71,3 +71,17 @@ def find_superseded(entries: list[MemoryEntry]) -> set[str]:
         if e.supersedes_id:
             superseded.add(e.supersedes_id)
     return superseded
+
+
+# ── Capability 1.1 extension — well-grounded check for reconciliation ───────
+#
+# Additive only. Used by reconcile() rule (b).
+
+
+def well_grounded(entry: MemoryEntry, now: float | None = None) -> bool:
+    """True if the entry is currently within its validity window (not stale).
+
+    Distinct from `is_stale()` which only checks validity_end. `well_grounded`
+    is the inverse: validity_end is None (open) OR validity_end > now.
+    """
+    return not is_stale(entry, now)

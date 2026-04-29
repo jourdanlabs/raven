@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "COSMIC"
+  ],
+  "id": "pair_23_identity_a",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "pair_23_identity",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "COSMIC is sometimes shortened to cosmic-engine in casual notes today",
+  "timestamp": 1735603200.0,
+  "topic_tags": [
+    "cosmic_identity",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735603200.0
+}

@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Daniel Charbonnet"
+  ],
+  "id": "pair_24_identity_a",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "pair_24_identity",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Daniel Charbonnet is sometimes called Dan in casual project chat today",
+  "timestamp": 1735603200.0,
+  "topic_tags": [
+    "daniel_identity",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735603200.0
+}

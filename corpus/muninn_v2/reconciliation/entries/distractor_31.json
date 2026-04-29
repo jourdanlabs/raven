@@ -1,0 +1,20 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [],
+  "id": "distractor_31",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "",
+    "role": "distractor"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "monthly all-hands meeting moved to first Thursday consistently",
+  "timestamp": 1735516800.0,
+  "topic_tags": [
+    "distractor",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735516800.0
+}

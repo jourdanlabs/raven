@@ -1,0 +1,20 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [],
+  "id": "distractor_16",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "",
+    "role": "distractor"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "library books renewal is due on the first of next month",
+  "timestamp": 1734220800.0,
+  "topic_tags": [
+    "distractor",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1734220800.0
+}

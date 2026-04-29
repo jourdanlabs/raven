@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "COSMIC"
+  ],
+  "id": "pair_09_importance_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_09_importance",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "COSMIC is never hosted in the dev environment for the demo today every traffic",
+  "timestamp": 1735430400.0,
+  "topic_tags": [
+    "cosmic_loc",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735430400.0
+}

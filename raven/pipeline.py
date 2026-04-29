@@ -116,3 +116,54 @@ class RAVENPipeline:
     def ingest(self, entry: MemoryEntry) -> str:
         """Convenience passthrough to the store."""
         return self.store.ingest(entry)
+
+    # ── Capability 1.1 — reconciliation hook ────────────────────────────────
+    #
+    # Additive only. The main `recall()` flow above is unchanged. This hook
+    # is invoked by AURORA-aware callers (Sub C wires it through AuroraVerdict
+    # in capability 1.3) to turn PULSAR's contradictions into typed
+    # ResolvedClaim verdicts.
+    #
+    # The hook is also used directly by the scoring harness in
+    # `corpus/muninn_v2/reconciliation/scoring/run_baselines.py`.
+
+    def reconcile_contradictions(
+        self,
+        entries: list[MemoryEntry],
+        *,
+        now: float | None = None,
+    ) -> list:
+        """Detect contradictions in `entries`, reconcile each pair, return
+        the list of ResolvedClaim verdicts (None entries dropped — only
+        successful reconciliations returned).
+        """
+        # Local imports to avoid circular at module load.
+        from raven.reconciliation import ReconciliationContext, reconcile
+
+        if not entries:
+            return []
+
+        # Build context once for this batch
+        causal_edges = nova.build_causal_graph(entries)
+        meteor_entities = {
+            e.id: self._meteor.tag_entities(e.text) for e in entries
+        }
+        # importance_scores are advisory — class rank is what wins rule (d),
+        # but we expose per-memory scores for harness diagnostics.
+        importance_scores = {
+            e.id: s for e, s in quasar.rank_by_importance(entries, causal_edges, now)
+        }
+
+        ctx = ReconciliationContext(
+            meteor_entities=meteor_entities,
+            now=now,
+            causal_edges=causal_edges,
+            importance_scores=importance_scores,
+        )
+
+        resolved: list = []
+        for a, b, _ctype in pulsar.reconcilable_pairs(entries):
+            claim = reconcile(a, b, context=ctx)
+            if claim is not None:
+                resolved.append(claim)
+        return resolved

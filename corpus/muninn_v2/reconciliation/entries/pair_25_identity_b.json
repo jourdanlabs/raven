@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Krillin"
+  ],
+  "id": "pair_25_identity_b",
+  "metadata": {
+    "memory_class": "identity",
+    "pair_id": "pair_25_identity",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Krillin is the canonical identity name of the assistant agent",
+  "timestamp": 1722729600.0,
+  "topic_tags": [
+    "krillin_identity",
+    "identity"
+  ],
+  "validity_end": null,
+  "validity_start": 1722729600.0
+}

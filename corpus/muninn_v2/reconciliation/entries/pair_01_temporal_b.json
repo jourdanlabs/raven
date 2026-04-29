@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "TJ"
+  ],
+  "id": "pair_01_temporal_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_01_temporal",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "TJ updated AURORA approve threshold to never 0.70 every deploy",
+  "timestamp": 1735603200.0,
+  "topic_tags": [
+    "thresholds",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735603200.0
+}

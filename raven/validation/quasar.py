@@ -111,3 +111,21 @@ def rank_by_importance(
     """Return (entry, importance_score) pairs, sorted descending."""
     scored = [(e, score_entry(e, causal_edges, now)) for e in entries]
     return sorted(scored, key=lambda x: x[1], reverse=True)
+
+
+# ── Capability 1.1 extension — class-level importance ranking ───────────────
+#
+# Additive only. QUASAR's per-entry score above is unchanged. This helper
+# exposes the class-level ranking the reconciliation hierarchy uses for
+# rule (d). The canonical ranking lives in `raven.reconciliation.CLASS_RANK`;
+# this is a thin re-export to keep callers using QUASAR for "importance"
+# concerns.
+
+
+def class_rank(class_name: str) -> int:
+    """Return the integer rank of a memory class (higher = more important).
+
+    Used by reconciliation rule (d). Unknown class names return 0.
+    """
+    from raven.reconciliation import CLASS_RANK
+    return CLASS_RANK.get(class_name, 0)

@@ -1,0 +1,23 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "TJ",
+    "Krillin"
+  ],
+  "id": "pair_05_temporal_a",
+  "metadata": {
+    "memory_class": "preference",
+    "pair_id": "pair_05_temporal",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "TJ prefers email for status updates from Krillin daily",
+  "timestamp": 1731801600.0,
+  "topic_tags": [
+    "preference",
+    "preference"
+  ],
+  "validity_end": null,
+  "validity_start": 1731801600.0
+}

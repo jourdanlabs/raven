@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "COSMIC"
+  ],
+  "id": "pair_16_evidence_strength_a",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_16_evidence_strength",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "COSMIC pipeline runs heliotrope mode default during scheduled production loads",
+  "timestamp": 1735084800.0,
+  "topic_tags": [
+    "cosmic_pipeline_c",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735084800.0
+}

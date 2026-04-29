@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Daniel Charbonnet"
+  ],
+  "id": "pair_13_importance_b",
+  "metadata": {
+    "memory_class": "preference",
+    "pair_id": "pair_13_importance",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Daniel Charbonnet prefers async review for tickets daily routine",
+  "timestamp": 1735603200.0,
+  "topic_tags": [
+    "daniel_pref",
+    "preference"
+  ],
+  "validity_end": null,
+  "validity_start": 1735603200.0
+}
