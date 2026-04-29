@@ -1,0 +1,20 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [],
+  "id": "distractor_43",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "",
+    "role": "distractor"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "water filter replacement happens quarterly per facility schedule",
+  "timestamp": 1734480000.0,
+  "topic_tags": [
+    "distractor",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1734480000.0
+}

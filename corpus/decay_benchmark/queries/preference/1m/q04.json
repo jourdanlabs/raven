@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.813701,
+    "min": 0.773701
+  },
+  "horizon": "1m",
+  "horizon_seconds": 2592000,
+  "id": "preference__1m__04",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I prefer red wine over white.",
+  "query": "Do I drink wine?",
+  "target_memory_id": "mem-preference-1m-04"
+}

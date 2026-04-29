@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.22,
+    "min": 0.18
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "factual_long__5y__01",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Headquarters is at 123 Main St.",
+  "query": "What is the company HQ?",
+  "target_memory_id": "mem-factual_long-5y-01"
+}

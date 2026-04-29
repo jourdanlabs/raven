@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Bulma"
+  ],
+  "id": "pair_12_importance_a",
+  "metadata": {
+    "memory_class": "transactional",
+    "pair_id": "pair_12_importance",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Bulma is currently busy responding to a query right now",
+  "timestamp": 1735516800.0,
+  "topic_tags": [
+    "bulma_state",
+    "transactional"
+  ],
+  "validity_end": null,
+  "validity_start": 1735516800.0
+}

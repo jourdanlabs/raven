@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.32,
+    "min": 0.28
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "preference__5y__07",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I like spicy Thai food.",
+  "query": "What kind of food do I like?",
+  "target_memory_id": "mem-preference-5y-07"
+}

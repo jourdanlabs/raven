@@ -1,0 +1,448 @@
+{
+  "distractors": [
+    {
+      "id": "pair_14_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_14_evidence_strength"
+    },
+    {
+      "id": "pair_15_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_15_evidence_strength"
+    },
+    {
+      "id": "pair_16_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_16_evidence_strength"
+    },
+    {
+      "id": "pair_17_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_17_evidence_strength"
+    },
+    {
+      "id": "pair_18_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_18_evidence_strength"
+    },
+    {
+      "id": "pair_19_evidence_strength_chain",
+      "role": "evidence_chain",
+      "supports_pair": "pair_19_evidence_strength"
+    },
+    {
+      "id": "distractor_01",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_02",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_03",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_04",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_05",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_06",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_07",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_08",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_09",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_10",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_11",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_12",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_13",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_14",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_15",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_16",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_17",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_18",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_19",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_20",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_21",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_22",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_23",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_24",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_25",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_26",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_27",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_28",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_29",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_30",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_31",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_32",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_33",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_34",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_35",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_36",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_37",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_38",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_39",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_40",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_41",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_42",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_43",
+      "role": "distractor"
+    },
+    {
+      "id": "distractor_44",
+      "role": "distractor"
+    }
+  ],
+  "pairs": [
+    {
+      "a_id": "pair_01_temporal_a",
+      "b_id": "pair_01_temporal_b",
+      "expected_loser_id": "pair_01_temporal_a",
+      "expected_winner_id": "pair_01_temporal_b",
+      "pair_id": "pair_01_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "thresholds"
+    },
+    {
+      "a_id": "pair_02_temporal_a",
+      "b_id": "pair_02_temporal_b",
+      "expected_loser_id": "pair_02_temporal_a",
+      "expected_winner_id": "pair_02_temporal_b",
+      "pair_id": "pair_02_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "schedule"
+    },
+    {
+      "a_id": "pair_03_temporal_a",
+      "b_id": "pair_03_temporal_b",
+      "expected_loser_id": "pair_03_temporal_a",
+      "expected_winner_id": "pair_03_temporal_b",
+      "pair_id": "pair_03_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "config"
+    },
+    {
+      "a_id": "pair_04_temporal_a",
+      "b_id": "pair_04_temporal_b",
+      "expected_loser_id": "pair_04_temporal_a",
+      "expected_winner_id": "pair_04_temporal_b",
+      "pair_id": "pair_04_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "version"
+    },
+    {
+      "a_id": "pair_05_temporal_a",
+      "b_id": "pair_05_temporal_b",
+      "expected_loser_id": "pair_05_temporal_a",
+      "expected_winner_id": "pair_05_temporal_b",
+      "pair_id": "pair_05_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "preference"
+    },
+    {
+      "a_id": "pair_06_temporal_a",
+      "b_id": "pair_06_temporal_b",
+      "expected_loser_id": "pair_06_temporal_a",
+      "expected_winner_id": "pair_06_temporal_b",
+      "pair_id": "pair_06_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "office"
+    },
+    {
+      "a_id": "pair_07_temporal_a",
+      "b_id": "pair_07_temporal_b",
+      "expected_loser_id": "pair_07_temporal_a",
+      "expected_winner_id": "pair_07_temporal_b",
+      "pair_id": "pair_07_temporal",
+      "reconciliation_basis": "temporal",
+      "topic": "model"
+    },
+    {
+      "a_id": "pair_08_importance_a",
+      "b_id": "pair_08_importance_b",
+      "expected_loser_id": "pair_08_importance_a",
+      "expected_winner_id": "pair_08_importance_b",
+      "pair_id": "pair_08_importance",
+      "reconciliation_basis": "importance",
+      "topic": "raven_pref"
+    },
+    {
+      "a_id": "pair_09_importance_a",
+      "b_id": "pair_09_importance_b",
+      "expected_loser_id": "pair_09_importance_a",
+      "expected_winner_id": "pair_09_importance_b",
+      "pair_id": "pair_09_importance",
+      "reconciliation_basis": "importance",
+      "topic": "cosmic_loc"
+    },
+    {
+      "a_id": "pair_10_importance_a",
+      "b_id": "pair_10_importance_b",
+      "expected_loser_id": "pair_10_importance_a",
+      "expected_winner_id": "pair_10_importance_b",
+      "pair_id": "pair_10_importance",
+      "reconciliation_basis": "importance",
+      "topic": "helix_state"
+    },
+    {
+      "a_id": "pair_11_importance_a",
+      "b_id": "pair_11_importance_b",
+      "expected_loser_id": "pair_11_importance_a",
+      "expected_winner_id": "pair_11_importance_b",
+      "pair_id": "pair_11_importance",
+      "reconciliation_basis": "importance",
+      "topic": "tj_role"
+    },
+    {
+      "a_id": "pair_12_importance_a",
+      "b_id": "pair_12_importance_b",
+      "expected_loser_id": "pair_12_importance_a",
+      "expected_winner_id": "pair_12_importance_b",
+      "pair_id": "pair_12_importance",
+      "reconciliation_basis": "importance",
+      "topic": "bulma_state"
+    },
+    {
+      "a_id": "pair_13_importance_a",
+      "b_id": "pair_13_importance_b",
+      "expected_loser_id": "pair_13_importance_a",
+      "expected_winner_id": "pair_13_importance_b",
+      "pair_id": "pair_13_importance",
+      "reconciliation_basis": "importance",
+      "topic": "daniel_pref"
+    },
+    {
+      "a_id": "pair_14_evidence_strength_a",
+      "b_id": "pair_14_evidence_strength_b",
+      "expected_loser_id": "pair_14_evidence_strength_b",
+      "expected_winner_id": "pair_14_evidence_strength_a",
+      "pair_id": "pair_14_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "raven_decision_a"
+    },
+    {
+      "a_id": "pair_15_evidence_strength_a",
+      "b_id": "pair_15_evidence_strength_b",
+      "expected_loser_id": "pair_15_evidence_strength_a",
+      "expected_winner_id": "pair_15_evidence_strength_b",
+      "pair_id": "pair_15_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "bulma_route_b"
+    },
+    {
+      "a_id": "pair_16_evidence_strength_a",
+      "b_id": "pair_16_evidence_strength_b",
+      "expected_loser_id": "pair_16_evidence_strength_a",
+      "expected_winner_id": "pair_16_evidence_strength_b",
+      "pair_id": "pair_16_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "cosmic_pipeline_c"
+    },
+    {
+      "a_id": "pair_17_evidence_strength_a",
+      "b_id": "pair_17_evidence_strength_b",
+      "expected_loser_id": "pair_17_evidence_strength_a",
+      "expected_winner_id": "pair_17_evidence_strength_b",
+      "pair_id": "pair_17_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "krillin_mode_d"
+    },
+    {
+      "a_id": "pair_18_evidence_strength_a",
+      "b_id": "pair_18_evidence_strength_b",
+      "expected_loser_id": "pair_18_evidence_strength_a",
+      "expected_winner_id": "pair_18_evidence_strength_b",
+      "pair_id": "pair_18_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "helix_storage_e"
+    },
+    {
+      "a_id": "pair_19_evidence_strength_a",
+      "b_id": "pair_19_evidence_strength_b",
+      "expected_loser_id": "pair_19_evidence_strength_a",
+      "expected_winner_id": "pair_19_evidence_strength_b",
+      "pair_id": "pair_19_evidence_strength",
+      "reconciliation_basis": "evidence_strength",
+      "topic": "mineral_index_f"
+    },
+    {
+      "a_id": "pair_20_identity_a",
+      "b_id": "pair_20_identity_b",
+      "expected_loser_id": "pair_20_identity_a",
+      "expected_winner_id": "pair_20_identity_b",
+      "pair_id": "pair_20_identity",
+      "reconciliation_basis": "identity",
+      "topic": "tj_identity"
+    },
+    {
+      "a_id": "pair_21_identity_a",
+      "b_id": "pair_21_identity_b",
+      "expected_loser_id": "pair_21_identity_a",
+      "expected_winner_id": "pair_21_identity_b",
+      "pair_id": "pair_21_identity",
+      "reconciliation_basis": "identity",
+      "topic": "raven_identity"
+    },
+    {
+      "a_id": "pair_22_identity_a",
+      "b_id": "pair_22_identity_b",
+      "expected_loser_id": "pair_22_identity_a",
+      "expected_winner_id": "pair_22_identity_b",
+      "pair_id": "pair_22_identity",
+      "reconciliation_basis": "identity",
+      "topic": "bulma_identity"
+    },
+    {
+      "a_id": "pair_23_identity_a",
+      "b_id": "pair_23_identity_b",
+      "expected_loser_id": "pair_23_identity_a",
+      "expected_winner_id": "pair_23_identity_b",
+      "pair_id": "pair_23_identity",
+      "reconciliation_basis": "identity",
+      "topic": "cosmic_identity"
+    },
+    {
+      "a_id": "pair_24_identity_a",
+      "b_id": "pair_24_identity_b",
+      "expected_loser_id": "pair_24_identity_a",
+      "expected_winner_id": "pair_24_identity_b",
+      "pair_id": "pair_24_identity",
+      "reconciliation_basis": "identity",
+      "topic": "daniel_identity"
+    },
+    {
+      "a_id": "pair_25_identity_a",
+      "b_id": "pair_25_identity_b",
+      "expected_loser_id": "pair_25_identity_a",
+      "expected_winner_id": "pair_25_identity_b",
+      "pair_id": "pair_25_identity",
+      "reconciliation_basis": "identity",
+      "topic": "krillin_identity"
+    }
+  ],
+  "summary": {
+    "distractors": 50,
+    "pairs": 25,
+    "per_basis": {
+      "evidence_strength": 6,
+      "identity": 6,
+      "importance": 6,
+      "temporal": 7
+    },
+    "total_entries": 100
+  }
+}

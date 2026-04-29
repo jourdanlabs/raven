@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.99716,
+    "min": 0.95716
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "factual_long__1d__09",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "We deploy to AWS us-east-1.",
+  "query": "Which cloud provider is used?",
+  "target_memory_id": "mem-factual_long-1d-09"
+}

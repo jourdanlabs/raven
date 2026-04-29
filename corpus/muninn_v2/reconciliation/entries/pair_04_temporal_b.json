@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "COSMIC"
+  ],
+  "id": "pair_04_temporal_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_04_temporal",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "COSMIC engine never runs on version 1.2 in production every region",
+  "timestamp": 1735646400.0,
+  "topic_tags": [
+    "version",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735646400.0
+}

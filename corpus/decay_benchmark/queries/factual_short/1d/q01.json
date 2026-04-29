@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.52,
+    "min": 0.48
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "factual_short__1d__01",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Lunch is at 7pm at the corner cafe.",
+  "query": "Where is lunch tonight?",
+  "target_memory_id": "mem-factual_short-1d-01"
+}

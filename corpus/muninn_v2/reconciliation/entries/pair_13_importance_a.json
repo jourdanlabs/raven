@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Daniel Charbonnet"
+  ],
+  "id": "pair_13_importance_a",
+  "metadata": {
+    "memory_class": "transactional",
+    "pair_id": "pair_13_importance",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Daniel Charbonnet is reviewing tickets right now this hour",
+  "timestamp": 1735603200.0,
+  "topic_tags": [
+    "daniel_pref",
+    "transactional"
+  ],
+  "validity_end": null,
+  "validity_start": 1735603200.0
+}

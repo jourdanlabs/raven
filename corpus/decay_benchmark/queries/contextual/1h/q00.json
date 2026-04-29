@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.975883
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "contextual__1h__00",
+  "memory_class": "contextual",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Working from the SF office today.",
+  "query": "Where am I working from today?",
+  "target_memory_id": "mem-contextual-1h-00"
+}

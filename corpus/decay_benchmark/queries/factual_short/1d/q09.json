@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.52,
+    "min": 0.48
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "factual_short__1d__09",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Ben is on-call this rotation.",
+  "query": "Who is the on-call engineer?",
+  "target_memory_id": "mem-factual_short-1d-09"
+}

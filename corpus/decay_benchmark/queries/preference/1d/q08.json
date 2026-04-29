@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.972328
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "preference__1d__08",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I prefer macOS for development.",
+  "query": "Which OS do I prefer?",
+  "target_memory_id": "mem-preference-1d-08"
+}

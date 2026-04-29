@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Daniel Charbonnet"
+  ],
+  "id": "pair_06_temporal_a",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_06_temporal",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Daniel Charbonnet works from the Houston office daily routine",
+  "timestamp": 1727913600.0,
+  "topic_tags": [
+    "office",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1727913600.0
+}

@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.925724,
+    "min": 0.885724
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "contextual__1d__07",
+  "memory_class": "contextual",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I'm in room 401 right now.",
+  "query": "Which room am I in?",
+  "target_memory_id": "mem-contextual-1d-07"
+}

@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "HELIX"
+  ],
+  "id": "pair_10_importance_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_10_importance",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "HELIX never processes batches in parallel by configuration every workload",
+  "timestamp": 1735344000.0,
+  "topic_tags": [
+    "helix_state",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735344000.0
+}

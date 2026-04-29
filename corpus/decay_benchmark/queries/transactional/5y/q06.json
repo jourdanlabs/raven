@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.07,
+    "min": 0.03
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "transactional__5y__06",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Bought 4 monitors for the office.",
+  "query": "What was bought?",
+  "target_memory_id": "mem-transactional-5y-06"
+}

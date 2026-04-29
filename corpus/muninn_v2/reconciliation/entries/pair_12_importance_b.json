@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Bulma"
+  ],
+  "id": "pair_12_importance_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_12_importance",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Bulma uses the steady on-session policy by default",
+  "timestamp": 1735516800.0,
+  "topic_tags": [
+    "bulma_state",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735516800.0
+}

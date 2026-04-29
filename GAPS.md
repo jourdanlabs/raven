@@ -193,6 +193,43 @@ we keep the per-question session boundary discipline.
 ## Capability 1.2 — Decay-Aware Recall (sub-agent B, 2026-04-27)
 
 ### DEC-001 — Heuristic classifier is regex-only
+
+| GAPS-007 | Reconciliation | `MemoryEntry.memory_class` field is added by Sub B (capability 1.2). Until that lands, `raven.reconciliation.derive_memory_class()` infers via `metadata['memory_class']` → `topic_tags` → `"contextual"` fallback. Once 1.2 ships, swap derive_memory_class call sites for `entry.memory_class`. |
+| GAPS-008 | Reconciliation | METEOR's `tag_entities()` matches by lowercase substring against the canonical alias registry. Entities not in the registry produce zero overlap → identity rule cannot fire. Workaround: register custom entities via `METEORConfig(extra_aliases=...)` per-deployment. Long-term: add free-form NER fallback. |
+| GAPS-009 | Reconciliation | LLM-judge baseline in `corpus/muninn_v2/reconciliation/scoring/run_baselines.py` is a stub. Real GPT-4-class call (median of 5) costs ~$0.15 per pair × 25 pairs = ~$4 per full run. Replace `_call_llm_judge()` when budget allows. |
+| GAPS-010 | Reconciliation | Rule (c) uses NOVA weighted edge-depth (`sum(edge.weight)` for incident edges), not raw count. NOVA's word-overlap heuristic is permissive enough that both sides of a pair often pick up at least one chain edge — weighted depth is what discriminates. Document the weight choice; raw count would have produced ties for ~all evidence_strength corpus pairs. |
+
+---
+
+## Capability 1.1 — Reconciliation (added 2025-04-29)
+
+### PULSAR detection blind spots affect raven_v1 baseline
+
+The MUNINN v2 reconciliation corpus contains 25 pairs split into two
+realism modes per basis: ~half use absolutist/negation language that v1.0
+PULSAR can detect, and ~half are paraphrased restatements (e.g. "TJ prefers
+email" vs "TJ prefers Telegram") that PULSAR's surface heuristics cannot
+flag. The raven_v1 baseline scores ~18% as a result — it correctly
+refuses on the PULSAR-detectable subset (0.5 partial credit each) and
+gets nothing on the rest. This honestly reflects v1.0's contradiction
+blindspot; addressing it requires GAPS-001 (semantic contradiction
+detection).
+
+### Identity-rule confidence floor
+
+`reconcile()` floors reconciliation confidence at 0.5 even when the rule
+fires deterministically (e.g., identity always wins). This is a deliberate
+choice: confidence reflects RAVEN's confidence in *the act of
+reconciling*, not in the winner's content. A future refinement may raise
+the floor for non-reconcilable classes (identity) since those rules are
+effectively rule-based, not score-based.
+
+
+---
+
+## Capability 1.2 - Decay-Aware Recall (sub-agent B, 2026-04-27)
+
+### DEC-001 - Heuristic classifier is regex-only
 `raven.storage.migrations.classify_text` uses regexes + token lists to
 backfill `memory_class` for legacy rows. It misses semantic patterns
 (e.g. "the project codename is RAVEN" lands as `factual_long` but is
@@ -207,6 +244,14 @@ ingest time). Medium for legacy v1.0 corpora — operator review is the
 mitigation until an embedding classifier lands.
 
 ### DEC-002 — `raven/types.py` legacy module shadowed by `raven/types/` package
+
+place - `classify_text` is the only swap point.
+
+**Impact:** Low for fresh installs (new entries get the right class at
+ingest time). Medium for legacy v1.0 corpora - operator review is the
+mitigation until an embedding classifier lands.
+
+### DEC-002 - `raven/types.py` legacy module shadowed by `raven/types/` package
 Step 0 introduced the `raven/types/` package but did not delete the
 top-level `raven/types.py` module. Python's package-over-module
 precedence means the package wins and the .py file is dead code, but
@@ -217,6 +262,8 @@ after Phase 1 sub-agents merge.
 **Impact:** Cosmetic. No functional consequence.
 
 ### DEC-003 — MemPalace + LLM-judge baselines are stubs
+
+### DEC-003 - MemPalace + LLM-judge baselines are stubs
 `corpus/decay_benchmark/scoring/run_baselines.py` ships
 `baseline_mempalace_stub` (constant 0.5) and `baseline_llm_judge_stub`
 (deterministic-seed random in [floor, 1.0]). They produce honest 0% /
@@ -229,6 +276,8 @@ for tuned baselines.
 is loud in the JSON output.
 
 ### DEC-004 — Migration is opt-in for v0
+
+### DEC-004 - Migration is opt-in for v0
 `run_migrations()` only runs automatically on `RAVENStore` construction
 when `RAVEN_RUN_MIGRATIONS=1` is set. The CLI's `raven migrate run`
 also requires the flag as a safety interlock. Phase 2 should flip the
@@ -238,6 +287,10 @@ before committing.
 **Impact:** Low. Operator awareness — documented in CLI help text.
 
 ### DEC-005 — `confidence_at_ingest` multiplies the curve
+
+**Impact:** Low. Operator awareness - documented in CLI help text.
+
+### DEC-005 - `confidence_at_ingest` multiplies the curve
 `class_aware_weight` does `confidence_at_ingest * 0.5 ** (age / hl)`
 floored at the policy floor. A 0.5-confidence-at-ingest entry can
 therefore never exceed 0.5 even when fresh (modulo the floor). This
@@ -253,3 +306,71 @@ QUASAR's importance scoring needs to compose with it.
 | DEC-003  | Baselines| Replace MemPalace + LLM-judge stubs in DECAY scoring harness                   |
 | DEC-004  | Migrate  | Flip `RAVEN_RUN_MIGRATIONS` default in Phase 2; add `raven migrate dry-run`    |
 | DEC-005  | Decay    | Document/tune interaction between `confidence_at_ingest` and class-aware floor |
+
+| ID       | Area      | Description                                                                    |
+| -------- | --------- | ------------------------------------------------------------------------------ |
+| DEC-001  | Migrate   | Replace regex classifier in `classify_text` with embedding-based classifier    |
+| DEC-002  | Cleanup   | Delete dead `raven/types.py` module (cleanup PR after Phase 1 merges)          |
+| DEC-003  | Baselines | Replace MemPalace + LLM-judge stubs in DECAY scoring harness                   |
+| DEC-004  | Migrate   | Flip `RAVEN_RUN_MIGRATIONS` default in Phase 2; add `raven migrate dry-run`    |
+| DEC-005  | Decay     | Document/tune interaction between `confidence_at_ingest` and class-aware floor |
+
+## Capability 1.3 — Structured Refusal (added in this sub-agent's PR)
+
+### Reconciliation handshake is loosely coupled
+`raven.refusal.classify_refusal` accepts `resolved_claim_count` as a plain
+integer, not a list of `ResolvedClaim` objects. This is intentional for the
+sprint — Sub-A's reconciliation surface is on a parallel branch and the
+contract has not yet stabilized — but it means the classifier cannot inspect
+*which* contradictions were resolved, only how many. Once Sub-A's
+`ResolvedClaim` API lands on main, the classifier should accept the list and
+cross-reference it against `aurora_input.contradictions` to detect partial
+resolutions per-pair (the current `len(contradictions) > resolved_count`
+check is a conservative approximation).
+
+**Impact:** Low for now (no Sub-A wiring on this branch), Medium once Sub-A
+merges. Tracked as GAPS-007 below.
+
+### Scope allowlist is substring-based, not semantic
+`scope_violation` matches query tokens against allowlist entries via
+case-insensitive substring containment in either direction. This handles
+common operator-defined topic prefixes (e.g., "billing" matching
+"billings") but does **not** handle synonyms ("payment" vs "remittance"),
+multilingual queries, or hierarchical scopes (allowing "finance" should
+arguably allow "billing" and "invoicing"). Operators must enumerate every
+in-scope token explicitly.
+
+**Impact:** Medium. Acceptable for v1 — operator policy is opaque to RAVEN.
+Tracked as GAPS-008.
+
+### Staleness floor is global, not per-class
+`classify_refusal` accepts a `decay_floor` parameter, defaulting to
+`0.05` (the lowest of the built-in `DecayPolicy` floors). When Sub-B's
+class-aware decay policies land, the classifier should look up the
+per-memory floor (via `MemoryClass.decay_curve`) instead of using a single
+global floor. Today, an "identity"-class memory (floor=0.5) and a
+"transactional"-class memory (floor=0.05) are both compared against `0.05`,
+which under-counts staleness for the identity class.
+
+**Impact:** Medium. Tracked as GAPS-009.
+
+### LLM-judge baseline is a stub
+The `LLM-judge` baseline in `corpus/refusal_benchmark/scoring/run_baselines.py`
+emits deterministic random predictions across the five refusal types. It is
+plumbed end-to-end so a future implementer can swap in a real chat-completion
+call without touching the harness, but **the published precision number for
+LLM-judge is not a real comparison**. Tracked as GAPS-010.
+
+### Refusal benchmark corpus is templated, not adversarial
+The 200-query corpus follows fixed templates (40 per type) chosen to
+exercise the classifier's branches predictably. RAVEN_v2 scores 100% on it
+because the templates were designed to fall cleanly into one bucket each.
+A real-world adversarial corpus (queries that genuinely sit on the boundary
+between two types) would lower precision and is needed before claiming
+broad coverage. Tracked as GAPS-011.
+
+| GAPS-007 | Refusal | Wire `ResolvedClaim` list into `classify_refusal` once Sub-A merges |
+| GAPS-008 | Refusal | Replace substring scope-allowlist with semantic / hierarchical match |
+| GAPS-009 | Refusal | Use class-specific decay floors once Sub-B's policy registry lands |
+| GAPS-010 | Refusal | Replace `LLM-judge` stub with a real LLM call |
+| GAPS-011 | Refusal | Add an adversarial-boundary refusal corpus (mixed-type ambiguous queries) |

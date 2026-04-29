@@ -126,3 +126,23 @@ def detect_stale_contradictions(entries: list[MemoryEntry]) -> list[Contradictio
 
 def all_contradictions(entries: list[MemoryEntry]) -> list[Contradiction]:
     return detect_contradictions(entries) + detect_stale_contradictions(entries)
+
+
+# ── Capability 1.1 extension — reconciliation-aware contradictions ──────────
+#
+# Additive only. The v1.0 API above is unchanged. These helpers expose
+# pre-paired contradictions in a form the reconciliation module consumes.
+
+
+def reconcilable_pairs(entries: list[MemoryEntry]) -> list[tuple[MemoryEntry, MemoryEntry, str]]:
+    """Return (entry_a, entry_b, contradiction_type) tuples for every detected
+    contradiction, suitable for feeding into `raven.reconciliation.reconcile()`.
+
+    Order within each tuple is stable: (entry_a, entry_b) is always the order
+    PULSAR reported the contradiction in. The reconciler decides which is the
+    winner — PULSAR does not pre-rank.
+    """
+    out: list[tuple[MemoryEntry, MemoryEntry, str]] = []
+    for c in all_contradictions(entries):
+        out.append((c.entry_a, c.entry_b, c.contradiction_type))
+    return out

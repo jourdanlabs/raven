@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.991532,
+    "min": 0.951532
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "factual_short__1h__08",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Deck v17 is the live deck this week.",
+  "query": "Which slide deck is current?",
+  "target_memory_id": "mem-factual_short-1h-08"
+}

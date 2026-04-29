@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "TJ"
+  ],
+  "id": "pair_11_importance_a",
+  "metadata": {
+    "memory_class": "transactional",
+    "pair_id": "pair_11_importance",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "TJ is a contributor on the project this quarter",
+  "timestamp": 1734825600.0,
+  "topic_tags": [
+    "tj_role",
+    "transactional"
+  ],
+  "validity_end": null,
+  "validity_start": 1734825600.0
+}

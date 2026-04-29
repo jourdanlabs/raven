@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.52,
+    "min": 0.48
+  },
+  "horizon": "1m",
+  "horizon_seconds": 2592000,
+  "id": "factual_long__1m__08",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Support email is help@example.com.",
+  "query": "What is the support email?",
+  "target_memory_id": "mem-factual_long-1m-08"
+}

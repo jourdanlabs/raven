@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.967516,
+    "min": 0.927516
+  },
+  "horizon": "1w",
+  "horizon_seconds": 604800,
+  "id": "preference__1w__03",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I prefer jazz when working.",
+  "query": "What music do I prefer?",
+  "target_memory_id": "mem-preference-1w-03"
+}

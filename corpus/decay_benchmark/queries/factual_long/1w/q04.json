@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.870667,
+    "min": 0.830667
+  },
+  "horizon": "1w",
+  "horizon_seconds": 604800,
+  "id": "factual_long__1w__04",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "The codename is RAVEN.",
+  "query": "What is the project codename?",
+  "target_memory_id": "mem-factual_long-1w-04"
+}

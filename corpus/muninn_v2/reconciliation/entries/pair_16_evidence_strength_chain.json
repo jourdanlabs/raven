@@ -1,0 +1,23 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "COSMIC"
+  ],
+  "id": "pair_16_evidence_strength_chain",
+  "metadata": {
+    "chains_into": "pair_16_evidence_strength_b",
+    "memory_class": "factual",
+    "pair_id": "pair_16_evidence_strength",
+    "role": "evidence_chain"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "As a result COSMIC lithograph mode production loads scales smoothly across regions",
+  "timestamp": 1735093440.0,
+  "topic_tags": [
+    "cosmic_pipeline_c",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735093440.0
+}

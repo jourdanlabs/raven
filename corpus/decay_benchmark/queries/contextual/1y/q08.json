@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.17,
+    "min": 0.13
+  },
+  "horizon": "1y",
+  "horizon_seconds": 31536000,
+  "id": "contextual__1y__08",
+  "memory_class": "contextual",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I have the metrics dashboard open.",
+  "query": "Which dashboard is open?",
+  "target_memory_id": "mem-contextual-1y-08"
+}
