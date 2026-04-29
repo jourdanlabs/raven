@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "RAVEN"
+  ],
+  "id": "pair_14_evidence_strength_a",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_14_evidence_strength",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "RAVEN ceiling permissive setting governs the platform deployment evidently",
+  "timestamp": 1735257600.0,
+  "topic_tags": [
+    "raven_decision_a",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735257600.0
+}

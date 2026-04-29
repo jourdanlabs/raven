@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Krillin"
+  ],
+  "id": "pair_25_identity_a",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "pair_25_identity",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Krillin is sometimes referenced as Krillin2 in test logs today",
+  "timestamp": 1735516800.0,
+  "topic_tags": [
+    "krillin_identity",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735516800.0
+}

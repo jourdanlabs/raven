@@ -1,0 +1,20 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [],
+  "id": "distractor_39",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "",
+    "role": "distractor"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "supply closet reorganization happened last Saturday morning",
+  "timestamp": 1734825600.0,
+  "topic_tags": [
+    "distractor",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1734825600.0
+}

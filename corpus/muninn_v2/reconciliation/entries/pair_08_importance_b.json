@@ -1,0 +1,23 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Krillin",
+    "RAVEN"
+  ],
+  "id": "pair_08_importance_b",
+  "metadata": {
+    "memory_class": "preference",
+    "pair_id": "pair_08_importance",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Krillin never relies on RAVEN as a transient lookup tool every session",
+  "timestamp": 1735257600.0,
+  "topic_tags": [
+    "raven_pref",
+    "preference"
+  ],
+  "validity_end": null,
+  "validity_start": 1735257600.0
+}

@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Bulma"
+  ],
+  "id": "pair_22_identity_a",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "pair_22_identity",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Bulma is always mentioned in passing as BulmaSequel across logs every channel",
+  "timestamp": 1735430400.0,
+  "topic_tags": [
+    "bulma_identity",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735430400.0
+}

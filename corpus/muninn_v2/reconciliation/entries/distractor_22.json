@@ -1,0 +1,20 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [],
+  "id": "distractor_22",
+  "metadata": {
+    "memory_class": "contextual",
+    "pair_id": "",
+    "role": "distractor"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "carpet cleaning vendor confirmed for the lobby on Saturday",
+  "timestamp": 1733702400.0,
+  "topic_tags": [
+    "distractor",
+    "contextual"
+  ],
+  "validity_end": null,
+  "validity_start": 1733702400.0
+}

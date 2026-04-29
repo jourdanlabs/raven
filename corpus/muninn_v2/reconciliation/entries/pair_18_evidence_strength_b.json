@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "HELIX"
+  ],
+  "id": "pair_18_evidence_strength_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_18_evidence_strength",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "HELIX uses sandstone storage layer for embeddings primary lookup pipeline",
+  "timestamp": 1734998400.0,
+  "topic_tags": [
+    "helix_storage_e",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1734998400.0
+}

@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Krillin"
+  ],
+  "id": "pair_17_evidence_strength_a",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_17_evidence_strength",
+    "role": "a"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Krillin operates copperhead mode currently for handling safety constraints policy",
+  "timestamp": 1735344000.0,
+  "topic_tags": [
+    "krillin_mode_d",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735344000.0
+}

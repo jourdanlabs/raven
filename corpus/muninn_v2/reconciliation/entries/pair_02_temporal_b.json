@@ -1,0 +1,22 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "RAVEN"
+  ],
+  "id": "pair_02_temporal_b",
+  "metadata": {
+    "memory_class": "factual",
+    "pair_id": "pair_02_temporal",
+    "role": "b"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "RAVEN deploy must never run on Monday morning consistently every week",
+  "timestamp": 1735516800.0,
+  "topic_tags": [
+    "schedule",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735516800.0
+}

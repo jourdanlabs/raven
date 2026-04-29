@@ -1,0 +1,23 @@
+{
+  "confidence_at_ingest": 1.0,
+  "entity_tags": [
+    "Bulma"
+  ],
+  "id": "pair_15_evidence_strength_chain",
+  "metadata": {
+    "chains_into": "pair_15_evidence_strength_b",
+    "memory_class": "factual",
+    "pair_id": "pair_15_evidence_strength",
+    "role": "evidence_chain"
+  },
+  "source": "muninn_v2_reconciliation",
+  "supersedes_id": null,
+  "text": "Consequently Bulma stockyard relays handling sessions persistently across regions delivery",
+  "timestamp": 1735179840.0,
+  "topic_tags": [
+    "bulma_route_b",
+    "factual"
+  ],
+  "validity_end": null,
+  "validity_start": 1735179840.0
+}
