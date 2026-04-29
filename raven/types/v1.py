@@ -16,6 +16,11 @@ class MemoryEntry:
     validity_start: float = 0.0               # defaults to timestamp at ingest
     validity_end: Optional[float] = None      # None = currently valid
     metadata: dict = field(default_factory=dict)
+    # Capability 1.2 — class-aware decay. Backward-compat default keeps every
+    # existing v1.0 caller working (uninitialised → contextual). One of:
+    # "factual_short" | "factual_long" | "preference" | "transactional"
+    # | "contextual" | "identity" | a custom registered class name.
+    memory_class: str = "contextual"
 
     def __post_init__(self) -> None:
         if self.validity_start == 0.0:

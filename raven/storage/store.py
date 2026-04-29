@@ -1,8 +1,16 @@
-"""RAVENStore — SQLite-backed memory store with vector index."""
+"""RAVENStore — SQLite-backed memory store with vector index.
+
+Capability 1.2 added two columns to ``memories``: ``memory_class`` (the
+decay-class label) and ``review_required`` (set by the migration when a
+heuristic classification was low-confidence). Both have safe defaults so
+v1.0 databases keep working — see ``raven.storage.migrations`` for the
+opt-in upgrade path.
+"""
 from __future__ import annotations
 
 import io
 import json
+import os
 import sqlite3
 import time
 import uuid
@@ -52,6 +60,12 @@ class RAVENStore:
         self._conn.execute("PRAGMA foreign_keys=ON")
         for ddl in ALL_DDL:
             self._conn.execute(ddl)
+        # Capability 1.2 — opt-in column migration for pre-existing v1.0
+        # databases that don't yet have memory_class / review_required.
+        # Idempotent: ensure_class_columns no-ops if columns already exist.
+        if os.environ.get("RAVEN_RUN_MIGRATIONS") == "1":
+            from raven.storage.migrations import ensure_class_columns
+            ensure_class_columns(self._conn)
         self._conn.commit()
 
     # ── Write ──────────────────────────────────────────────────────────────────
@@ -67,27 +81,58 @@ class RAVENStore:
                 (entry.timestamp, entry.supersedes_id),
             )
 
-        self._conn.execute(
-            """
-            INSERT OR REPLACE INTO memories
-              (id, text, timestamp, source, entity_tags, topic_tags,
-               confidence, supersedes_id, validity_start, validity_end, metadata)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?)
-            """,
-            (
-                entry_id,
-                entry.text,
-                entry.timestamp,
-                entry.source,
-                json.dumps(entry.entity_tags),
-                json.dumps(entry.topic_tags),
-                entry.confidence_at_ingest,
-                entry.supersedes_id,
-                entry.validity_start or entry.timestamp,
-                entry.validity_end,
-                json.dumps(entry.metadata),
-            ),
-        )
+        # Detect whether the connected DB has the Capability 1.2 columns.
+        # We branch the INSERT to stay compatible with both pre- and
+        # post-migration schemas without forcing all callers to migrate.
+        has_class_columns = self._has_memory_class_column()
+
+        if has_class_columns:
+            self._conn.execute(
+                """
+                INSERT OR REPLACE INTO memories
+                  (id, text, timestamp, source, entity_tags, topic_tags,
+                   confidence, supersedes_id, validity_start, validity_end,
+                   metadata, memory_class, review_required)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,
+                (
+                    entry_id,
+                    entry.text,
+                    entry.timestamp,
+                    entry.source,
+                    json.dumps(entry.entity_tags),
+                    json.dumps(entry.topic_tags),
+                    entry.confidence_at_ingest,
+                    entry.supersedes_id,
+                    entry.validity_start or entry.timestamp,
+                    entry.validity_end,
+                    json.dumps(entry.metadata),
+                    getattr(entry, "memory_class", "contextual") or "contextual",
+                    int(bool(entry.metadata.get("review_required", False))),
+                ),
+            )
+        else:
+            self._conn.execute(
+                """
+                INSERT OR REPLACE INTO memories
+                  (id, text, timestamp, source, entity_tags, topic_tags,
+                   confidence, supersedes_id, validity_start, validity_end, metadata)
+                VALUES (?,?,?,?,?,?,?,?,?,?,?)
+                """,
+                (
+                    entry_id,
+                    entry.text,
+                    entry.timestamp,
+                    entry.source,
+                    json.dumps(entry.entity_tags),
+                    json.dumps(entry.topic_tags),
+                    entry.confidence_at_ingest,
+                    entry.supersedes_id,
+                    entry.validity_start or entry.timestamp,
+                    entry.validity_end,
+                    json.dumps(entry.metadata),
+                ),
+            )
 
         vec = self._embedder.encode(entry.text)
         self._conn.execute(
@@ -185,6 +230,14 @@ class RAVENStore:
     # ── Helpers ────────────────────────────────────────────────────────────────
 
     def _row_to_entry(self, row: sqlite3.Row) -> MemoryEntry:
+        # row.keys() tells us whether the Capability 1.2 columns are present;
+        # databases predating the migration won't have them, in which case
+        # MemoryEntry's default ("contextual") applies.
+        keys = set(row.keys())
+        memory_class = (
+            row["memory_class"] if "memory_class" in keys and row["memory_class"]
+            else "contextual"
+        )
         return MemoryEntry(
             id=row["id"],
             text=row["text"],
@@ -197,7 +250,16 @@ class RAVENStore:
             validity_start=row["validity_start"],
             validity_end=row["validity_end"],
             metadata=json.loads(row["metadata"]),
+            memory_class=memory_class,
         )
+
+    def _has_memory_class_column(self) -> bool:
+        """True iff the connected SQLite DB has the Capability 1.2 columns.
+
+        Cheap PRAGMA call — sub-millisecond on any realistic store.
+        """
+        cols = {r[1] for r in self._conn.execute("PRAGMA table_info(memories)")}
+        return "memory_class" in cols and "review_required" in cols
 
     def close(self) -> None:
         self._conn.close()
