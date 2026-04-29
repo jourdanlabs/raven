@@ -74,6 +74,10 @@ BUILTIN_POLICIES: list[DecayPolicy] = [
     IDENTITY,
 ]
 
+# Convenience lookup for the scoring harness and any caller that wants a
+# policy by name without touching the registry.
+POLICIES_BY_NAME: dict[str, DecayPolicy] = {p.name: p for p in BUILTIN_POLICIES}
+
 
 def register_builtins() -> None:
     """Register all built-in policies. Idempotent — safe to call multiple times."""
