@@ -102,3 +102,65 @@ with 30-day-old decay. Addressed in GAPS-002 tracking item.
 | GAPS-004 | METEOR | Expand entity alias dictionary beyond 50 default entries |
 | GAPS-005 | Benchmark | Add real-world corpus sampled from anonymized production sessions |
 | GAPS-006 | Baselines | Add actual Zep and Mem0 SDK bindings for direct comparison |
+
+---
+
+## Capability 1.3 — Structured Refusal (added in this sub-agent's PR)
+
+### Reconciliation handshake is loosely coupled
+`raven.refusal.classify_refusal` accepts `resolved_claim_count` as a plain
+integer, not a list of `ResolvedClaim` objects. This is intentional for the
+sprint — Sub-A's reconciliation surface is on a parallel branch and the
+contract has not yet stabilized — but it means the classifier cannot inspect
+*which* contradictions were resolved, only how many. Once Sub-A's
+`ResolvedClaim` API lands on main, the classifier should accept the list and
+cross-reference it against `aurora_input.contradictions` to detect partial
+resolutions per-pair (the current `len(contradictions) > resolved_count`
+check is a conservative approximation).
+
+**Impact:** Low for now (no Sub-A wiring on this branch), Medium once Sub-A
+merges. Tracked as GAPS-007 below.
+
+### Scope allowlist is substring-based, not semantic
+`scope_violation` matches query tokens against allowlist entries via
+case-insensitive substring containment in either direction. This handles
+common operator-defined topic prefixes (e.g., "billing" matching
+"billings") but does **not** handle synonyms ("payment" vs "remittance"),
+multilingual queries, or hierarchical scopes (allowing "finance" should
+arguably allow "billing" and "invoicing"). Operators must enumerate every
+in-scope token explicitly.
+
+**Impact:** Medium. Acceptable for v1 — operator policy is opaque to RAVEN.
+Tracked as GAPS-008.
+
+### Staleness floor is global, not per-class
+`classify_refusal` accepts a `decay_floor` parameter, defaulting to
+`0.05` (the lowest of the built-in `DecayPolicy` floors). When Sub-B's
+class-aware decay policies land, the classifier should look up the
+per-memory floor (via `MemoryClass.decay_curve`) instead of using a single
+global floor. Today, an "identity"-class memory (floor=0.5) and a
+"transactional"-class memory (floor=0.05) are both compared against `0.05`,
+which under-counts staleness for the identity class.
+
+**Impact:** Medium. Tracked as GAPS-009.
+
+### LLM-judge baseline is a stub
+The `LLM-judge` baseline in `corpus/refusal_benchmark/scoring/run_baselines.py`
+emits deterministic random predictions across the five refusal types. It is
+plumbed end-to-end so a future implementer can swap in a real chat-completion
+call without touching the harness, but **the published precision number for
+LLM-judge is not a real comparison**. Tracked as GAPS-010.
+
+### Refusal benchmark corpus is templated, not adversarial
+The 200-query corpus follows fixed templates (40 per type) chosen to
+exercise the classifier's branches predictably. RAVEN_v2 scores 100% on it
+because the templates were designed to fall cleanly into one bucket each.
+A real-world adversarial corpus (queries that genuinely sit on the boundary
+between two types) would lower precision and is needed before claiming
+broad coverage. Tracked as GAPS-011.
+
+| GAPS-007 | Refusal | Wire `ResolvedClaim` list into `classify_refusal` once Sub-A merges |
+| GAPS-008 | Refusal | Replace substring scope-allowlist with semantic / hierarchical match |
+| GAPS-009 | Refusal | Use class-specific decay floors once Sub-B's policy registry lands |
+| GAPS-010 | Refusal | Replace `LLM-judge` stub with a real LLM call |
+| GAPS-011 | Refusal | Add an adversarial-boundary refusal corpus (mixed-type ambiguous queries) |
