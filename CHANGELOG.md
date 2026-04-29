@@ -1,6 +1,46 @@
 # RAVEN Changelog
 
-## [1.2.0] — Phase 2.1 calibration sprint (PENDING — Captain merges + tags)
+## [1.2.1] — 2026-04-29 — Phase 2.2 fix-01 (now_override)
+
+### Added
+
+- **`RAVENPipeline.recall(now=...)` and `recall_v2(now=...)`** — optional
+  corpus-relative reference time threaded into ECLIPSE. When supplied,
+  decay is computed relative to `now` instead of wall-clock. When omitted
+  (default `None`), behavior is byte-for-byte identical to v1.0 / v1.1 /
+  v1.2.0. Pure additive; no breaking changes.
+- LongMemEval harness + token-efficiency benchmark wired to pass
+  `now=q.question_timestamp` per question.
+
+### Resolved
+
+- **LME-010** (architectural): ECLIPSE decay vs `time.time()` collapsed
+  chat-turn AURORA composites. Gate now produces meaningful approvals on
+  chat-turn data:
+
+  | metric                                  | v1.2.0 | v1.2.1 | delta |
+  | --------------------------------------- | -----: | -----: | ----: |
+  | RAVEN APPROVED (calibration N=400)      |     3  |   117  | +114  |
+  | RAVEN APPROVED (held-out N=100)         |     2  |    34  |  +32  |
+  | Approval-quality median composite       |  0.676 | 0.663  | ≥ 0.6 floor preserved |
+  | Quality-controlled token-reduction subset | 22.0% | 37.8%  | +15.8 pts |
+
+### Known (new)
+
+- **LME-012**: LongMemEval substring scorer ranks `(approved+rejected)`
+  by `retrieval_score`, so AURORA's filtering doesn't propagate to A@5.
+  Held-out A@5 unchanged at 79.8% even after LME-010 unblock. Tracked in
+  `GAPS.md`; fix shape is a composite-ranked scorer variant.
+
+### Tests
+
+- 322 tests, 89% coverage (was 316 / 89% at v1.2.0).
+- 6 new tests in `tests/test_pipeline.py` covering `now_override`
+  determinism, default-preservation, and chat-turn composite rescue.
+
+---
+
+## [1.2.0] — 2026-04-29 — Phase 2.1 calibration sprint
 
 ### Added
 
@@ -40,6 +80,65 @@
 ### Optional dependencies
 
 - New `[bench]` extra installs `tiktoken` for token-efficiency runs.
+
+---
+
+## [1.1.0] — 2026-04-29 — Phase 1 capabilities + LongMemEval cold baseline
+
+### Added
+
+**Capability 1.1 — Contradiction Reconciliation** (`raven/reconciliation.py`)
+- `reconcile()` function turns PULSAR contradictions into typed
+  `ResolvedClaim` verdicts via a four-rule hierarchy: identity-protect,
+  well-grounded supersedes superseded, evidence-strength comparison,
+  temporal recency tiebreak.
+- `ReconciliationContext` carries METEOR entities, NOVA causal edges,
+  QUASAR importance scores into the reconciliation decision.
+- `RAVENPipeline.reconcile_contradictions()` — convenience method that
+  runs PULSAR detection + reconciliation in one pass.
+- Audit hash (SHA-256 of winner.id + loser.id + basis + evidence_chain)
+  on every `ResolvedClaim` for chain-of-custody replay.
+
+**Capability 1.2 — Decay-Aware Recall** (`raven/decay/`)
+- `DecayPolicy` per-class registry with 6 built-in policies:
+  `factual_short` (1d half-life), `factual_long` (30d), `preference`
+  (90d), `transactional` (4h), `contextual` (7d), `identity` (no decay).
+- `MemoryEntry.memory_class` field + transitional `metadata['memory_class']`
+  fallback for older corpora.
+- `eclipse.apply_class_aware_decay()` — class-aware path; v1.0 functions
+  (`apply_decay`, `decay_weight`, `is_stale`, etc.) preserved unchanged.
+
+**Capability 1.3 — Structured Refusal** (`raven/refusal.py`)
+- `RefusalReason` taxonomy: `insufficient_evidence`,
+  `conflicting_evidence_unresolvable`, `staleness_threshold_exceeded`,
+  `identity_ambiguous`, `scope_violation`.
+- `AuroraVerdict` — superset of v1.0 `RavenResponse`; existing callers
+  unchanged. New `RAVENPipeline.recall_v2()` returns typed verdict.
+- `validate_aurora_v2()` — companion to `run_aurora()` that produces the
+  typed verdict. v1.0 `run_aurora` entrypoint unchanged.
+- `scope_allowlist` parameter on `recall_v2` — refuses with
+  `type="scope_violation"` BEFORE any retrieval when query content tokens
+  fall outside the declared topic allowlist.
+- Audit hash on every `RefusalReason` and `AuroraVerdict`.
+
+**Phase 1 type surface** (`raven/types/phase1.py`)
+- `Memory` (alias for `MemoryEntry`), `EvidenceNode`, `MemoryClass`,
+  `ResolvedClaim`, `DecayPolicy`, `RefusalReason`, `AuroraVerdict`.
+- All `frozen=True`. `AuroraVerdict.__post_init__` enforces
+  decision/refusal_reason coherence.
+
+**LongMemEval cold-run baseline** (`benchmarks/longmemeval/`)
+- Loader, harness, scorer for the 500-instance LongMemEval oracle
+  corpus.
+- v1.0 cold-run results: A@5 = 73.4%, A@10 = 80.0%, sR@5 = 94.9%,
+  abstention 100%. AURORA refused 473/500 questions (chat-turn vs
+  fact-style threshold mismatch — addressed in Phase 2.1).
+- p50 latency 50 ms.
+
+### Tests
+- 280 tests, 89% coverage (was 87 / 94% at v1.0.0).
+- Phase 1 capability sub-corpora at 100% on sealed reconciliation,
+  decay, and refusal benchmarks.
 
 ---
 
@@ -118,8 +217,16 @@ Initial public release.
 
 ## Roadmap
 
-- **[1.1.0]** PostgreSQL/Redis storage backend (GAPS-003)
-- **[1.1.0]** Semantic contradiction detection via embedding distance (GAPS-001)
-- **[1.2.0]** Real-world corpus sampled from production sessions (GAPS-005)
-- **[1.2.0]** Direct Zep and Mem0 SDK baseline bindings (GAPS-006)
-- **[2.0.0]** Multi-user / shared store support
+Tracked in `GAPS.md`. Highest-priority items:
+
+- **LME-002** — LLM-answerer adapter for synthesis-required categories
+  (~71% of remaining LongMemEval A@5 loss is synthesis, not retrieval).
+- **LME-012** — Composite-ranked harness scorer variant so the AURORA
+  gate's surfacing rate can affect A@5 (the LME-010 fix unblocked the
+  gate; LME-012 is what lets the unblock register on the metric).
+- **LME-003** — `SentenceTransformerEmbedder` for paraphrase recall.
+- **LME-004** — Date-aware query intent ("first", "latest", "before").
+- **LME-005** — Wire official LongMemEval `evaluate_qa.py` LLM-judge.
+- **GAPS-003** — PostgreSQL/Redis storage backend.
+- **GAPS-001** — Semantic contradiction detection via embedding distance.
+- **[2.0.0]** — Multi-user / shared store support.
