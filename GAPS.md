@@ -463,6 +463,21 @@ hard-rule 4):**
 fact-style production usage (where timestamps are recent). Tracked here
 so Phase 2.2 has the receipt.
 
+**RESOLVED (Phase 2.2 fix-01, 2026-04-29):** `RAVENPipeline.recall(now=...)`
+threads a corpus-relative reference time through ECLIPSE; the LongMemEval
+harness passes `now=q.question_timestamp` per question so haystacks dated
+2023-2024 are decayed against the corpus's own time origin instead of
+2026 wall-clock. Default `now=None` falls back to `time.time()`, so v1.0
+/ v1.1 / capability-1.x callers see no behaviour change. Approval rates
+on the calibration set jumped from 3/400 (Phase 2.1) to **117/400**
+(Phase 2.2); held-out 2/100 → **34/100**. Approval-quality floor
+preserved (median composite on approvals 0.663 ≥ 0.6). The substring-A@5
+metric is unchanged because the harness ranks `(approved+rejected)` by
+`retrieval_score` for scoring — the gate only changes what's *surfaced*
+for downstream consumption, which is the token-efficiency picture
+(quality-controlled subset 30.5% → 37.8%). See
+`docs/phase2.2/fixes/01_now_override.md` for the full audit.
+
 ### LME-011 — chat_turn calibration shipped, magnitude small (2026-04-29)
 The Phase 2.1 calibration sprint produced the calibration-profile system
 (`raven.calibration` package, profile YAML loader, profile-scoped
@@ -482,3 +497,31 @@ hold without addressing LME-010. Published honestly per the brief's
 | -------- | -------- | ---------------------------------------------------------------------- |
 | LME-010  | Decay    | ECLIPSE decay-vs-`time.time()` blocks chat-turn AURORA approval         |
 | LME-011  | Sprint   | Phase 2.1 ships calibration system + chat_turn profile (small magnitude)|
+
+## Phase 2.2 — Decay fairness (2026-04-29)
+
+### LME-012 — `now_override` unblocks chat-turn approvals; A@5 metric still pinned by harness scorer
+The Phase 2.2 fix-01 (`RAVENPipeline.recall(now=...)`) resolved LME-010
+at the source: chat-turn AURORA approvals jumped 3→117/400 on calibration
+and 2→34/100 on held-out, while approval-quality stayed above the 0.6
+floor. The token-efficiency quality-controlled subset moved 30.5%→37.8%
+on calibration. **However, the held-out A@5 success criterion (≥84.8%)
+was DISCONFIRMED**: A@5 measured 79.8% on held-out, identical to Phase
+2.1, because the LongMemEval harness ranks `(approved+rejected)` by
+`retrieval_score` for substring scoring. The AURORA gate's filtering
+move does not propagate to A@5 in this scorer.
+
+**Impact:** Direction-confirms LME-010's decay-vs-clock root cause
+hypothesis. The chat-turn wedge narrative is "mixed" rather than "back
+on the table" (qc subset 37.8% < 50% threshold). The harness scorer is
+now the binding constraint on the A@5 metric, not the gate.
+
+**Phase 2.3+ candidates:**
+- Composite-ranked scorer variant (rank by AURORA composite instead of
+  retrieval score). Methodology decision: changes the published headline.
+- Per-class decay overrides (still need upstream classifier — same
+  blocker LME-010 originally identified).
+
+| ID       | Area     | Description                                                            |
+| -------- | -------- | ---------------------------------------------------------------------- |
+| LME-012  | Bench    | now_override unblocks gate; harness ranking by retrieval_score pins A@5 |

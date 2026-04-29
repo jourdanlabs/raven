@@ -181,7 +181,13 @@ def measure_one(
     # Run the full pipeline; what RAVEN would surface is the approved set
     # post-gate (A's confidence-filtered output). When AURORA refuses,
     # RAVEN surfaces nothing — by design — so tokens_raven = 0.
-    response = pipeline.recall(q.question)
+    #
+    # Phase 2.2 fix-01: thread the corpus-relative question_timestamp
+    # through ECLIPSE so token-efficiency runs see the same fair-decay
+    # regime as the harness. Otherwise the token numbers would reflect
+    # the LME-010 over-refusal artefact and not the calibrated gate.
+    now_override = q.question_timestamp if q.question_timestamp else None
+    response = pipeline.recall(q.question, now=now_override)
     raven_surfaced_texts = [sm.entry.text for sm in response.approved_memories]
 
     tokens_passthrough = count_tokens(passthrough_texts, encoder)
