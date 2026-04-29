@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.860896,
+    "min": 0.820896
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "transactional__1h__09",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Received 6 boxes of inventory.",
+  "query": "What was received?",
+  "target_memory_id": "mem-transactional-1h-09"
+}

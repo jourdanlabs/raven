@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.07,
+    "min": 0.03
+  },
+  "horizon": "1d",
+  "horizon_seconds": 86400,
+  "id": "transactional__1d__07",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Returned 1 keyboard to the supplier.",
+  "query": "Who returned an order?",
+  "target_memory_id": "mem-transactional-1d-07"
+}

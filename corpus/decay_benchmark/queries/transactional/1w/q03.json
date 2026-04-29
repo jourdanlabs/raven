@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.07,
+    "min": 0.03
+  },
+  "horizon": "1w",
+  "horizon_seconds": 604800,
+  "id": "transactional__1w__03",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Delivered 5 cases of paper.",
+  "query": "What was delivered?",
+  "target_memory_id": "mem-transactional-1w-03"
+}

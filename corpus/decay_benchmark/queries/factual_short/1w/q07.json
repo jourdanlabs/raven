@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.12,
+    "min": 0.08
+  },
+  "horizon": "1w",
+  "horizon_seconds": 604800,
+  "id": "factual_short__1w__07",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Dial 555-0123 for today's call.",
+  "query": "What is the conference call number?",
+  "target_memory_id": "mem-factual_short-1w-07"
+}

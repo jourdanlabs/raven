@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.12,
+    "min": 0.08
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "factual_short__5y__03",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Build 2026.04.27 is live.",
+  "query": "What is the current build version?",
+  "target_memory_id": "mem-factual_short-5y-03"
+}

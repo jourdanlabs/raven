@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.98
+  },
+  "horizon": "no_horizon",
+  "horizon_seconds": 0,
+  "id": "identity__no_horizon__09",
+  "memory_class": "identity",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Grace is our lead investor.",
+  "query": "Who is the lead investor?",
+  "target_memory_id": "mem-identity-09"
+}

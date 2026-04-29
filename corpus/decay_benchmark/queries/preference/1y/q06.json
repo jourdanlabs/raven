@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.32,
+    "min": 0.28
+  },
+  "horizon": "1y",
+  "horizon_seconds": 31536000,
+  "id": "preference__1y__06",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I prefer non-fiction over fiction.",
+  "query": "Do I read fiction?",
+  "target_memory_id": "mem-preference-1y-06"
+}

@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.98
+  },
+  "horizon": "no_horizon",
+  "horizon_seconds": 0,
+  "id": "identity__no_horizon__05",
+  "memory_class": "identity",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "My doctor is Dr. Patel.",
+  "query": "Who is my doctor?",
+  "target_memory_id": "mem-identity-05"
+}
