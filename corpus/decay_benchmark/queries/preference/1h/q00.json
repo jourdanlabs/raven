@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.979679
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "preference__1h__00",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "I prefer dark roast coffee, no sugar.",
+  "query": "What coffee do I like?",
+  "target_memory_id": "mem-preference-1h-00"
+}

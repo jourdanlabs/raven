@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.22,
+    "min": 0.18
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "factual_long__5y__07",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Dana is the technical lead.",
+  "query": "Who is the technical lead?",
+  "target_memory_id": "mem-factual_long-5y-07"
+}

@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.07,
+    "min": 0.03
+  },
+  "horizon": "1y",
+  "horizon_seconds": 31536000,
+  "id": "transactional__1y__00",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Paid $50 to the contractor.",
+  "query": "What was paid last?",
+  "target_memory_id": "mem-transactional-1y-00"
+}

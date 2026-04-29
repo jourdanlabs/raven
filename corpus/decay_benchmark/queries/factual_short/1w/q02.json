@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.12,
+    "min": 0.08
+  },
+  "horizon": "1w",
+  "horizon_seconds": 604800,
+  "id": "factual_short__1w__02",
+  "memory_class": "factual_short",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Today's meeting is in conference room B.",
+  "query": "What is today's room?",
+  "target_memory_id": "mem-factual_short-1w-02"
+}

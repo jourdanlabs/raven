@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.22,
+    "min": 0.18
+  },
+  "horizon": "1y",
+  "horizon_seconds": 31536000,
+  "id": "factual_long__1y__06",
+  "memory_class": "factual_long",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "The main repo is github.com/jourdanlabs/raven.",
+  "query": "What is the team's main repository?",
+  "target_memory_id": "mem-factual_long-1y-06"
+}
