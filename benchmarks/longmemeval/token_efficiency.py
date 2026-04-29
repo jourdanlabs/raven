@@ -217,17 +217,24 @@ def measure_one(
     )
 
 
-def _default_pipeline_factory(top_k: int = DEFAULT_TOP_K):
-    """Build a default RAVEN pipeline matching the v1.0 cold-run config.
+def _default_pipeline_factory(
+    top_k: int = DEFAULT_TOP_K,
+    calibration_profile: str = "factual",
+):
+    """Build a RAVEN pipeline factory for token-efficiency runs.
 
-    Phase 2.1 calibration runs replace this with their own factory that
-    constructs a ``RAVENPipeline`` tuned for the chat-turn profile. The
-    measurement code does not care which knobs were turned, only what the
-    pipeline does.
+    The default ``calibration_profile="factual"`` matches the v1.0
+    cold-run baseline byte-for-byte. Phase 2.1 chat-turn runs pass
+    ``calibration_profile="chat_turn"`` to swap calibration without
+    touching anything else — that's the *only* thing that varies between
+    profile comparisons, which is what makes the comparison clean.
     """
     def _factory():
         store = RAVENStore(":memory:")
-        return store, RAVENPipeline(store=store, top_k=top_k)
+        return store, RAVENPipeline(
+            store=store, top_k=top_k,
+            calibration_profile=calibration_profile,
+        )
     return _factory
 
 
@@ -342,6 +349,7 @@ def measure_corpus(
     top_k: int = DEFAULT_TOP_K,
     k_for_quality: int = DEFAULT_K_FOR_QUALITY,
     progress_every: int = 25,
+    calibration_profile: str = "factual",
 ) -> TokenEfficiencyReport:
     """Run token-efficiency measurement across ``questions``.
 
@@ -349,7 +357,9 @@ def measure_corpus(
     pass their own factory — that's the *only* thing that changes between
     runs, which is what makes the comparison clean.
     """
-    pipeline_factory = pipeline_factory or _default_pipeline_factory(top_k=top_k)
+    pipeline_factory = pipeline_factory or _default_pipeline_factory(
+        top_k=top_k, calibration_profile=calibration_profile,
+    )
     encoder = _get_encoder()
 
     records: list[TokenQueryRecord] = []
@@ -413,6 +423,10 @@ def main() -> int:
     )
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--top-k", type=int, default=DEFAULT_TOP_K)
+    parser.add_argument(
+        "--profile", type=str, default="factual",
+        help="Calibration profile name (factual | chat_turn | ...).",
+    )
     parser.add_argument("--output", type=str, default=None)
     args = parser.parse_args()
 
@@ -434,8 +448,13 @@ def main() -> int:
     if args.limit:
         questions = questions[: args.limit]
 
-    print(f"Token-efficiency · partition={args.partition} · N={len(questions)}")
-    report = measure_corpus(questions, top_k=args.top_k)
+    print(
+        f"Token-efficiency · partition={args.partition} · profile={args.profile} "
+        f"· N={len(questions)}"
+    )
+    report = measure_corpus(
+        questions, top_k=args.top_k, calibration_profile=args.profile,
+    )
 
     overall = report.overall
     qc = report.quality_controlled_overall

@@ -1,0 +1,33 @@
+name: chat_turn
+description: |
+  Phase 2.1 calibration profile for conversational chat-turn corpora
+  (LongMemEval-style: each retrieved unit is one chat turn from a
+  multi-turn session, not a structured decision record).
+
+  Rationale for aurora_threshold = 0.65 (NOT a benchmark target):
+
+  * AURORA composite = eclipse*0.25 + quasar*0.45 + pulsar*0.30 + nova_bonus.
+  * Chat-turn empirics (loss profile, 2026-04-27):
+      - eclipse decay ~ 0.05-0.30 for turns from sessions weeks-old at recall.
+      - quasar importance ~ 0.45-0.60 for generic conversational turns
+        (no decision keywords, no source-authority boost).
+      - pulsar conflict-free ~ 1.0 (chat conflicts are rare).
+      - nova_bonus ~ 0.0 (causal keywords are rare in informal chat).
+  * A *relevant* chat turn (recent-within-session, retrieval-matched, no
+    conflict) reaches composite ≈ 0.3*0.25 + 0.55*0.45 + 1.0*0.30 = 0.622.
+    A *highly* relevant turn (recent, importance bumped by query-aligned
+    entity hit) reaches ≈ 0.65-0.75.
+  * The 0.80 default is calibrated for fact-style memories where
+    eclipse>0.5 and quasar>0.7 are routine. Applied to chat turns it
+    refuses 100% of the calibration set (per loss_profile.md).
+
+  At threshold 0.65 the gate approves relevant-recent chat turns while
+  still rejecting old / low-importance / conflicted ones. Approval
+  quality stays above the 0.6 audit floor (every approved entry has
+  composite ≥ 0.65 by construction).
+
+  This is one knob, motivated by composite-formula arithmetic — NOT
+  tuned to maximise A@5 on the calibration set. Per the Phase 2.1 brief:
+  "If you find yourself adjusting thresholds to improve token reduction,
+  you've crossed into target-fixing on a secondary metric."
+aurora_threshold: 0.65

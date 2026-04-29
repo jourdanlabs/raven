@@ -75,10 +75,21 @@ def build_memory_entries(q: LMEQuestion) -> tuple[list[MemoryEntry], dict[str, s
     return entries, id_to_key, has_answer_keys
 
 
-def run_one(q: LMEQuestion, top_k: int = 20) -> QuestionResult:
-    """Run RAVEN against a single LongMemEval question."""
+def run_one(
+    q: LMEQuestion,
+    top_k: int = 20,
+    calibration_profile: str = "factual",
+) -> QuestionResult:
+    """Run RAVEN against a single LongMemEval question.
+
+    Phase 2.1: ``calibration_profile`` selects the AURORA threshold.
+    Defaults to ``"factual"`` so the v1.0 cold-run baseline is exactly
+    reproducible.
+    """
     store = RAVENStore(":memory:")
-    pipeline = RAVENPipeline(store=store, top_k=top_k)
+    pipeline = RAVENPipeline(
+        store=store, top_k=top_k, calibration_profile=calibration_profile,
+    )
 
     entries, id_to_key, has_answer_keys = build_memory_entries(q)
 
@@ -126,12 +137,15 @@ def run_all(
     questions: list[LMEQuestion],
     top_k: int = 20,
     progress_every: int = 25,
+    calibration_profile: str = "factual",
 ) -> list[QuestionResult]:
     results: list[QuestionResult] = []
     t0 = time.perf_counter()
     for i, q in enumerate(questions):
         try:
-            results.append(run_one(q, top_k=top_k))
+            results.append(run_one(
+                q, top_k=top_k, calibration_profile=calibration_profile,
+            ))
         except Exception as exc:  # noqa: BLE001
             # Record failure; do not abort the whole run.
             results.append(QuestionResult(
@@ -218,6 +232,10 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=None,
                         help="Limit number of questions (smoke test)")
     parser.add_argument("--top-k", type=int, default=20)
+    parser.add_argument(
+        "--profile", type=str, default="factual",
+        help="Calibration profile name (factual | chat_turn | ...).",
+    )
     parser.add_argument("--output", type=str, default=None,
                         help="Write per-question + aggregate JSON here")
     parser.add_argument("--quiet", action="store_true")
@@ -228,14 +246,15 @@ def main() -> int:
         questions = questions[: args.limit]
 
     if not args.quiet:
-        print(f"\nLongMemEval · RAVEN v1.0 cold-run")
+        print(f"\nLongMemEval · RAVEN run · profile={args.profile}")
         print(f"  N = {len(questions)} questions")
         print(f"  top_k = {args.top_k}")
         print(f"  embedder = TFIDFEmbedder (lexical-only)")
-        print(f"  no tuning — defaults only\n")
 
     t0 = time.perf_counter()
-    results = run_all(questions, top_k=args.top_k)
+    results = run_all(
+        questions, top_k=args.top_k, calibration_profile=args.profile,
+    )
     elapsed = time.perf_counter() - t0
 
     report = aggregate(results)
@@ -249,7 +268,8 @@ def main() -> int:
         out["config"] = {
             "top_k": args.top_k,
             "embedder": "TFIDFEmbedder",
-            "raven_version": "1.0.0",
+            "raven_version": "1.1.0",
+            "calibration_profile": args.profile,
         }
         Path(args.output).write_text(json.dumps(out, indent=2))
         print(f"  wrote {args.output}")

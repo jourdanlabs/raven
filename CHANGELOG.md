@@ -1,5 +1,48 @@
 # RAVEN Changelog
 
+## [1.2.0] — Phase 2.1 calibration sprint (PENDING — Captain merges + tags)
+
+### Added
+
+**Calibration profile system** (`raven/calibration/`)
+- `CalibrationProfile` — frozen bundle of calibration knobs (currently
+  `aurora_threshold`; `decay_overrides` reserved for Phase 2.2).
+- `RAVENPipeline(calibration_profile=...)` — name-keyed profile selection.
+  Default `"factual"` preserves v1.0 behaviour byte-for-byte; explicit
+  `aurora_threshold=...` still wins.
+- Profile-scoped registry — no shared global state across profiles.
+- Built-in profiles: `factual` (0.80), `chat_turn` (0.65).
+- Tiny YAML loader (no PyYAML dependency).
+
+**LongMemEval calibration sprint** (`benchmarks/longmemeval/`)
+- 80/20 corpus split (seed=42, sealed in `phase2.1_split.md`).
+- Held-out access fence (`heldout_guard.run_held_out_validation()`)
+  requires Day 5 marker file; architectural enforcement, not policy.
+- Token-efficiency instrumentation (`token_efficiency.py`, tiktoken
+  cl100k_base; quality-controlled headline only).
+- Per-fix attribution doc + loss profile + held-out validation report.
+
+### Phase 2.1 results
+
+* **Calibration profile system shipped.** Backward-compat preserved.
+* **chat_turn profile validates direction, magnitude bounded by LME-010.**
+  AURORA approves 3/400 (calibration) and 2/100 (held-out). Approval
+  quality 0.676 (above 0.6 audit floor). No off-target regression.
+* **Token-efficiency wedge: DISCONFIRMED at v1.1.** Published honestly.
+* **Held-out A@5 = 79.8%** (single shot, chat_turn profile).
+
+### Tests
+
+- 316 tests, 89% coverage (was 280 / 89% at v1.1.0).
+- 36 new tests covering split determinism, held-out guard, token
+  efficiency, calibration profile YAML, AURORA threshold threading.
+
+### Optional dependencies
+
+- New `[bench]` extra installs `tiktoken` for token-efficiency runs.
+
+---
+
 ## [1.0.0] — 2026-04-24
 
 Initial public release.

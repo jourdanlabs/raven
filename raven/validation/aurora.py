@@ -66,8 +66,18 @@ def _entry_composite(
     return min(1.0, base + nova_bonus)
 
 
-def gate(inp: AuroraInput) -> tuple[list[ScoredMemory], list[ScoredMemory]]:
-    """Return (approved, rejected) scored memory lists."""
+def gate(
+    inp: AuroraInput,
+    *,
+    approve_threshold: float = APPROVE_THRESHOLD,
+) -> tuple[list[ScoredMemory], list[ScoredMemory]]:
+    """Return (approved, rejected) scored memory lists.
+
+    The ``approve_threshold`` parameter (Phase 2.1) lets a pipeline
+    configured with a calibration profile override the module-level
+    default without monkey-patching. The default value preserves v1.0
+    behaviour exactly — every existing caller keeps its semantics.
+    """
     conflicted_ids = {
         c.entry_a.id for c in inp.contradictions
     } | {c.entry_b.id for c in inp.contradictions}
@@ -102,12 +112,12 @@ def gate(inp: AuroraInput) -> tuple[list[ScoredMemory], list[ScoredMemory]]:
             },
         )
 
-        if composite >= APPROVE_THRESHOLD:
+        if composite >= approve_threshold:
             approved.append(scored)
         else:
             scored.rejection_reason = (
                 "contradiction flagged" if conflicted
-                else f"below threshold ({composite:.2f} < {APPROVE_THRESHOLD})"
+                else f"below threshold ({composite:.2f} < {approve_threshold})"
             )
             rejected.append(scored)
 
@@ -115,11 +125,23 @@ def gate(inp: AuroraInput) -> tuple[list[ScoredMemory], list[ScoredMemory]]:
     return approved, rejected
 
 
-def run_aurora(inp: AuroraInput, trace: PipelineTrace) -> RavenResponse:
-    """Full AURORA gate. Returns complete RavenResponse."""
+def run_aurora(
+    inp: AuroraInput,
+    trace: PipelineTrace,
+    *,
+    approve_threshold: float = APPROVE_THRESHOLD,
+    conditional_threshold: float = CONDITIONAL_THRESHOLD,
+    refuse_threshold: float = REFUSE_THRESHOLD,
+) -> RavenResponse:
+    """Full AURORA gate. Returns complete RavenResponse.
+
+    Phase 2.1 calibration: thresholds may be overridden per pipeline
+    instance via the ``calibration_profile`` argument to
+    :class:`RAVENPipeline`. Default values preserve v1.0 behaviour.
+    """
     from raven.types import RavenResponse  # avoid circular at module level
 
-    approved, rejected = gate(inp)
+    approved, rejected = gate(inp, approve_threshold=approve_threshold)
 
     trace.aurora_approved = len(approved)
     trace.aurora_rejected = len(rejected)
@@ -131,11 +153,11 @@ def run_aurora(inp: AuroraInput, trace: PipelineTrace) -> RavenResponse:
     else:
         overall = 0.0
 
-    if not approved and overall < REFUSE_THRESHOLD:
+    if not approved and overall < refuse_threshold:
         status = "REFUSED"
-    elif overall >= APPROVE_THRESHOLD and approved:
+    elif overall >= approve_threshold and approved:
         status = "APPROVED"
-    elif overall >= CONDITIONAL_THRESHOLD:
+    elif overall >= conditional_threshold:
         status = "CONDITIONAL"
     else:
         status = "REJECTED"

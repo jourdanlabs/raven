@@ -39,15 +39,28 @@ class RAVENPipeline:
         self,
         store: RAVENStore,
         top_k: int = 20,
-        aurora_threshold: float = aurora.APPROVE_THRESHOLD,
+        aurora_threshold: float | None = None,
         half_life_days: float = eclipse.DEFAULT_HALF_LIFE_DAYS,
         meteor_config: meteor.METEORConfig | None = None,
+        calibration_profile: str = "factual",
     ) -> None:
+        # Phase 2.1: calibration profiles supply default knob values.
+        # ``aurora_threshold`` (when supplied) still wins so existing
+        # callers that pass an explicit value see their behaviour
+        # preserved bit-for-bit.
+        from raven.calibration import get_calibration_profile
+
+        profile = get_calibration_profile(calibration_profile)
         self.store = store
         self.top_k = top_k
-        self.aurora_threshold = aurora_threshold
+        self.aurora_threshold = (
+            aurora_threshold
+            if aurora_threshold is not None
+            else profile.aurora_threshold
+        )
         self.half_life_days = half_life_days
         self._meteor = meteor_config or meteor.METEORConfig()
+        self.calibration_profile = profile
 
     def recall(self, query: str) -> RavenResponse:
         t_start = time.perf_counter()
@@ -112,7 +125,9 @@ class RAVENPipeline:
             stale_ids=stale_ids,
             meteor_entity_count=trace.meteor_entities,
         )
-        response = aurora.run_aurora(inp, trace)
+        response = aurora.run_aurora(
+            inp, trace, approve_threshold=self.aurora_threshold,
+        )
 
         # Backfill retrieval scores onto scored memories
         for sm in response.approved_memories + response.rejected_memories:

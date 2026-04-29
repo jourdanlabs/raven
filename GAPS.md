@@ -436,3 +436,49 @@ methodology-correct path even though it shrinks the visible work.
 | LME-007  | Pipeline  | Defer synthesis-required A@5 loss to LME-002 (LLM-answerer adapter)      |
 | LME-008  | Bench     | Re-measure token-efficiency once AURORA can approve on chat-turn data    |
 | LME-009  | Calibrate | One-fix Phase 2.1 plan (chat-turn profile) — see loss_profile.md         |
+
+### LME-010 — ECLIPSE decay vs `time.time()` blocks chat-turn approval (2026-04-29)
+LongMemEval haystack timestamps are 2023-2024; recall happens in 2026. With
+the default 30-day half-life, decay weight is approximately 1e-7 for every
+entry, collapsing the AURORA composite to roughly `importance*0.45 + 0.30`.
+Empirical max composite across 599 retrieved entries on a 30-question
+sub-sample: **0.46** (median 0.21). No threshold >= 0.5 (the lowest value
+that preserves approval quality >= 0.6) can produce a meaningful approval
+rate at this composite distribution.
+
+**Phase 2.1 partial fix:** `chat_turn` profile lowers threshold to 0.65,
+which approves the few entries that reach composite >= 0.65 (3/400
+calibration set, 2/100 held-out). All in single-session-preference /
+single-session-assistant. Volume too small to materially affect A@5 or
+token efficiency.
+
+**Phase 2.2 candidates (architectural, OUT of Phase 2.1 scope per brief
+hard-rule 4):**
+- `chat_turn` profile gains a `half_life_days_override` knob, OR
+- harness gains a `now_override` for benchmark fairness, OR
+- per-class decay overrides become real (need upstream classifier — also
+  architectural).
+
+**Impact:** High on the chat-turn benchmark wedge narrative. Low on
+fact-style production usage (where timestamps are recent). Tracked here
+so Phase 2.2 has the receipt.
+
+### LME-011 — chat_turn calibration shipped, magnitude small (2026-04-29)
+The Phase 2.1 calibration sprint produced the calibration-profile system
+(`raven.calibration` package, profile YAML loader, profile-scoped
+registry, `RAVENPipeline(calibration_profile=...)` API) and the
+chat_turn profile (threshold 0.65, composite-formula motivated). All
+methodology gates (determinism, approval quality >= 0.6 floor, no
+off-target regression, category-motivation, single held-out shot)
+passed. Magnitude on the substring-A@5 metric is **zero** because the
+LongMemEval harness ranks `(approved+rejected)` by retrieval_score; the
+gate affects only what RAVEN surfaces for downstream LLM consumption.
+
+**Token efficiency disconfirmed** at v1.1: the wedge narrative does not
+hold without addressing LME-010. Published honestly per the brief's
+"all three outcomes (Confirmed/Mixed/Disconfirmed) are valid".
+
+| ID       | Area     | Description                                                            |
+| -------- | -------- | ---------------------------------------------------------------------- |
+| LME-010  | Decay    | ECLIPSE decay-vs-`time.time()` blocks chat-turn AURORA approval         |
+| LME-011  | Sprint   | Phase 2.1 ships calibration system + chat_turn profile (small magnitude)|
