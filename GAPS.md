@@ -522,6 +522,30 @@ now the binding constraint on the A@5 metric, not the gate.
 - Per-class decay overrides (still need upstream classifier — same
   blocker LME-010 originally identified).
 
+**ATTEMPTED, DISCONFIRMED (Phase 2.2 fix-02, 2026-04-29):** The
+composite-ranked scorer variant landed as
+`benchmarks/longmemeval/scorers/composite_ranked.py` (FROZEN spec:
+`composite = retrieval_score × aurora_weight`, `aurora_weight = 1.0`
+for approved, `0.0` for rejected). Default scorer remains
+`retrieval_ranked` so v1.2.1 numbers are reproducible byte-for-byte
+(SHAs `8fb968bb…` factual and `c0bf8c9f…` chat_turn match v1.2.1
+exactly). Held-out A@5 under `composite_ranked` measured **77.7 %** vs
+the v1.2.1 retrieval_ranked baseline of **79.8 %** — a **−2.1 pt
+regression**, the opposite direction from the hypothesis. Per-class
+breakdown shows the regression concentrated in temporal-reasoning
+(−3.45 pt, N=30) and single-session-assistant (−16.7 pt, N=6). The
+gate fires (34/100 APPROVED on held-out) but on the wrong subset:
+AURORA is approving non-answer-bearing memories on a meaningful
+fraction of these categories. **The next bottleneck is therefore
+AURORA approval _quality_, not gate firing rate.** Methodology gates
+all green (determinism, single-shot held-out, no spec tuning
+post-measurement, factual-profile regression-clean). Full audit at
+`docs/phase2.2/lme-012-composite-ranked-scorer.md`. Spawns Phase 2.3
+calibration sprint scoped to AURORA approval quality on chat-turn
+data; the scorer infrastructure shipped in fix-02 is the diagnostic
+surface that surfaces it.
+
 | ID       | Area     | Description                                                            |
 | -------- | -------- | ---------------------------------------------------------------------- |
 | LME-012  | Bench    | now_override unblocks gate; harness ranking by retrieval_score pins A@5 |
+| LME-013  | AURORA   | Approval *quality* on chat-turn temporal-reasoning + single-session-assistant: gate fires on non-answer-bearing memories. Surfaced by composite_ranked scorer (Phase 2.2 fix-02). Phase 2.3 sprint target. |
