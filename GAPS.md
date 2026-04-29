@@ -374,3 +374,65 @@ broad coverage. Tracked as GAPS-011.
 | GAPS-009 | Refusal | Use class-specific decay floors once Sub-B's policy registry lands |
 | GAPS-010 | Refusal | Replace `LLM-judge` stub with a real LLM call |
 | GAPS-011 | Refusal | Add an adversarial-boundary refusal corpus (mixed-type ambiguous queries) |
+
+---
+
+## Phase 2.1 — Calibration sprint findings (2026-04-27)
+
+The Phase 2.1 calibration sprint profiled losses by category against the
+calibration partition (`benchmarks/longmemeval/calibration.json`,
+SHA-256 `d6fc0b788c509d89cd2af0ecf71e6b3337f591be87005abfc5bdbdfda47c8eb0`)
+before any calibration change. Full report:
+`docs/phase2.1/loss_profile.md`. Key findings:
+
+### LME-007 — Synthesis-required questions are out of calibration scope
+71% of A@5 loss on the calibration set comes from categories whose gold
+answers are **synthesised strings** (counts, yes/no inferences, summary
+lists, rubrics describing desired response style). Examples:
+- multi-session: "How many model kits…" → gold `5`
+- knowledge-update: "Is my mom using the same method…" → gold `Yes.`
+- single-session-preference: "Recommend resources…" → gold is a **rubric**
+  describing the desired response style, never appearing verbatim in any
+  retrieved turn
+
+Threshold tuning cannot fix substring-match misses on synthesised gold.
+The honest action is to defer to LME-002 (LLM-answerer adapter) and not
+spend calibration changes pretending otherwise.
+
+**Impact:** High on the substring-A@5 metric (~71% of loss). Low on the
+LongMemEval official LLM-judge metric (rubric/yes-no answers would be
+credited by GPT-4o judging, but RAVEN does not synthesise).
+
+### LME-008 — Token-efficiency wedge is disconfirmed at v1.1 defaults
+Calibration-set token-efficiency baseline: passthrough 1,892,489 tokens vs.
+RAVEN-surfaced 0 tokens (RAVEN refuses 378/400 questions, A@5 collapses
+from 69.8% to 0.0%). Naïve "100% token reduction" is real but bought at
+−69.8 pts of A@5. The quality-controlled subset (RAVEN ≥ passthrough on
+A@5) is 121/400 (30.2%) and the median reduction inside it is +100% —
+which only means RAVEN refuses on questions where passthrough also
+loses. There is no honest token-efficiency story at the v1.1 defaults.
+
+**Impact:** High on the Phase 2.1 publish narrative. Whether this changes
+under chat-turn calibration is the open empirical question. The
+methodology requires we publish the answer either way.
+
+### LME-009 — Phase 2.1 narrowed to a single calibration target
+Per the loss profile (`docs/phase2.1/loss_profile.md`), only one category
+(single-session-preference) has a calibration-tractable failure mode
+(rubric gold + perfect retrieval, AURORA refuses everything). Categories
+1, 2, 4 are dominated by synthesis (out of scope for calibration).
+Category 5 has 2 failures (too small to attribute). The Phase 2.1 sprint
+therefore proposes one fix attempt (chat-turn AURORA threshold + per-class
+decay floors), measured rigorously with the per-fix attribution template,
+plus explicit "no calibration change warranted" entries for the other
+four categories so the THEMIS framing test sees we considered each.
+
+**Impact:** Reframes the brief's "category-by-category over top 5" plan
+into "honest single target plus 4 documented no-ops". This is the
+methodology-correct path even though it shrinks the visible work.
+
+| ID       | Area      | Description                                                              |
+| -------- | --------- | ------------------------------------------------------------------------ |
+| LME-007  | Pipeline  | Defer synthesis-required A@5 loss to LME-002 (LLM-answerer adapter)      |
+| LME-008  | Bench     | Re-measure token-efficiency once AURORA can approve on chat-turn data    |
+| LME-009  | Calibrate | One-fix Phase 2.1 plan (chat-turn profile) — see loss_profile.md         |
