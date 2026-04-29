@@ -53,6 +53,7 @@ from benchmarks.longmemeval.heldout_guard import (
 )
 from benchmarks.longmemeval.loader import LMEQuestion, load_questions
 from benchmarks.longmemeval.scorer import answer_substring_hit
+from benchmarks.longmemeval.scorers import DEFAULT_SCORER
 from raven.pipeline import RAVENPipeline
 from raven.storage.store import RAVENStore
 
@@ -356,12 +357,20 @@ def measure_corpus(
     k_for_quality: int = DEFAULT_K_FOR_QUALITY,
     progress_every: int = 25,
     calibration_profile: str = "factual",
+    scorer: str = DEFAULT_SCORER,
 ) -> TokenEfficiencyReport:
     """Run token-efficiency measurement across ``questions``.
 
     Defaults to the v1.0 pipeline factory. Phase 2.1 calibration variants
     pass their own factory — that's the *only* thing that changes between
     runs, which is what makes the comparison clean.
+
+    Phase 2.2 fix-02 (LME-012): ``scorer`` is recorded in the report's
+    ``config`` for audit. Token efficiency's A@5 metric uses
+    ``response.approved_memories`` — i.e., the AURORA-surfaced set —
+    which is already the composite-ranked surface by construction.
+    The scorer choice is therefore informational here, not behavioural;
+    we record it so per-scorer reports are unambiguous in the JSON.
     """
     pipeline_factory = pipeline_factory or _default_pipeline_factory(
         top_k=top_k, calibration_profile=calibration_profile,
@@ -409,6 +418,8 @@ def measure_corpus(
             "k_for_quality": k_for_quality,
             "tokenizer": "tiktoken cl100k_base",
             "raven_version": "1.1.0",
+            "calibration_profile": calibration_profile,
+            "scorer": scorer,
         },
     )
 
@@ -433,6 +444,16 @@ def main() -> int:
         "--profile", type=str, default="factual",
         help="Calibration profile name (factual | chat_turn | ...).",
     )
+    parser.add_argument(
+        "--scorer", type=str, default=DEFAULT_SCORER,
+        choices=["retrieval_ranked", "composite_ranked"],
+        help=(
+            "Scorer label recorded in the output config. Token "
+            "efficiency's surface is the AURORA-approved set regardless "
+            "of scorer (composite_ranked already filters to approved); "
+            "this flag exists so per-scorer reports are self-describing."
+        ),
+    )
     parser.add_argument("--output", type=str, default=None)
     args = parser.parse_args()
 
@@ -456,10 +477,11 @@ def main() -> int:
 
     print(
         f"Token-efficiency · partition={args.partition} · profile={args.profile} "
-        f"· N={len(questions)}"
+        f"· scorer={args.scorer} · N={len(questions)}"
     )
     report = measure_corpus(
         questions, top_k=args.top_k, calibration_profile=args.profile,
+        scorer=args.scorer,
     )
 
     overall = report.overall

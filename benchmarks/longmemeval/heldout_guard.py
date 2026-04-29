@@ -94,22 +94,37 @@ def _load_held_out_unguarded() -> list[LMEQuestion]:
     return load_questions(HELDOUT_PATH)
 
 
-def run_held_out_validation(runner) -> dict:
+def run_held_out_validation(
+    runner=None,
+    *,
+    profile: str | None = None,
+    scorer: str | None = None,
+    output: str | None = None,
+    top_k: int = 20,
+) -> dict:
     """Run a single held-out validation pass. **One-shot, Day 5 only.**
 
-    ``runner`` is any callable accepting ``list[LMEQuestion]`` and
-    returning a JSON-serialisable dict (typically the harness's
-    ``run_all`` + ``aggregate`` chain). The function:
+    Two call styles, both single-shot:
 
-    1. Verifies the ``phase2.1_complete`` marker is present.
-       Without it, raises :class:`HeldOutAccessError` immediately and
-       never opens the held-out file.
-    2. Loads the held-out partition through :func:`load_questions`.
-    3. Hands the questions to ``runner`` and returns whatever it returns.
+    1. **Custom runner (Phase 2.1 / fix-01 style).** Pass a positional
+       ``runner`` callable that accepts ``list[LMEQuestion]`` and returns
+       a JSON-serialisable dict. The function loads the held-out file
+       once and hands the questions over. This is the original signature
+       and remains supported byte-for-byte.
 
-    The marker check is the single architectural fence between the
-    calibration sprint and the published number. Removing or bypassing it
-    invalidates the THEMIS framing test for this sprint.
+    2. **Profile + scorer convenience (Phase 2.2 fix-02 / LME-012).**
+       Pass ``profile=``, ``scorer=``, optional ``output=`` and the
+       guard composes the harness's ``run_all`` + ``aggregate`` +
+       ``serialize_report`` chain internally. Equivalent to writing the
+       runner inline; reduces the chance that a Day-5 reproducibility
+       script trips over a typo.
+
+    Both styles enforce the ``phase2.1_complete`` marker fence. Without
+    the marker the function raises :class:`HeldOutAccessError` and never
+    opens the held-out file. The marker check is the single
+    architectural fence between the calibration sprint and the
+    published number; removing or bypassing it invalidates the THEMIS
+    framing test for this sprint.
     """
     if not MARKER_PATH.exists():
         raise HeldOutAccessError(
@@ -123,7 +138,49 @@ def run_held_out_validation(runner) -> dict:
             f"Run `python -m benchmarks.longmemeval.split --write-doc` first."
         )
     questions = load_questions(HELDOUT_PATH)
-    return runner(questions)
+
+    if runner is not None:
+        if profile is not None or scorer is not None or output is not None:
+            raise TypeError(
+                "Pass either a positional `runner` OR the "
+                "profile/scorer/output convenience kwargs, not both."
+            )
+        return runner(questions)
+
+    # Convenience path. Defer the harness import to keep this module
+    # cheap to import for the lock-status predicate path.
+    if profile is None or scorer is None:
+        raise TypeError(
+            "run_held_out_validation requires either a positional `runner` "
+            "or both `profile=` and `scorer=` keyword arguments."
+        )
+    import json
+    import time
+    from dataclasses import asdict
+
+    from benchmarks.longmemeval.harness import (
+        aggregate,
+        run_all,
+        serialize_report,
+    )
+
+    t0 = time.perf_counter()
+    results = run_all(
+        questions, top_k=top_k, calibration_profile=profile, scorer=scorer,
+    )
+    rep = aggregate(results)
+    out = serialize_report(rep, results)
+    out["wall_time_s"] = time.perf_counter() - t0
+    out["config"] = {
+        "top_k": top_k,
+        "embedder": "TFIDFEmbedder",
+        "raven_version": "1.2.x",
+        "calibration_profile": profile,
+        "scorer": scorer,
+    }
+    if output:
+        Path(output).write_text(json.dumps(out, indent=2))
+    return out
 
 
 __all__ = [

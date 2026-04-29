@@ -92,13 +92,45 @@ of categories, but pin the seed if you want bit-stable comparisons.
 
 ### Flags
 
-| Flag        | Default | Description                                            |
-| ----------- | :-----: | ------------------------------------------------------ |
-| `--data`    | (auto)  | Override path to `longmemeval_oracle.json`             |
-| `--limit N` | None    | Run only first N questions (smoke test)                |
-| `--top-k`   | 20      | RAVEN pipeline `top_k`                                 |
-| `--output`  | None    | Write per-question + aggregate JSON                    |
-| `--quiet`   | False   | Suppress progress + report; useful from other scripts  |
+| Flag        | Default            | Description                                            |
+| ----------- | :----------------: | ------------------------------------------------------ |
+| `--data`    | (auto)             | Override path to `longmemeval_oracle.json`             |
+| `--limit N` | None               | Run only first N questions (smoke test)                |
+| `--top-k`   | 20                 | RAVEN pipeline `top_k`                                 |
+| `--profile` | `factual`          | Calibration profile (`factual` | `chat_turn` | …)      |
+| `--scorer`  | `retrieval_ranked` | Scoring variant — see "Scorer variants" below          |
+| `--output`  | None               | Write per-question + aggregate JSON                    |
+| `--quiet`   | False              | Suppress progress + report; useful from other scripts  |
+
+### Scorer variants
+
+Two scorers ship in `benchmarks/longmemeval/scorers/`:
+
+| Name                | Behaviour                                                                     |
+| ------------------- | ----------------------------------------------------------------------------- |
+| `retrieval_ranked`  | Default. Ranks `(approved + rejected)` by `retrieval_score` descending. AURORA's gate is **invisible** to A@k under this scorer. Reproduces the v1.0 → v1.2.1 published numbers byte-for-byte. |
+| `composite_ranked`  | Phase 2.2 fix-02 / LME-012. Ranks the union by `retrieval_score × aurora_weight` (1.0 for approved, 0.0 for rejected). Propagates AURORA's filtering into A@k. The substring matcher is unchanged — only the ranking is different. |
+
+The substring matcher (`answer_substring_hit`) is shared between the two
+variants; only the ranking step differs. The default is
+`retrieval_ranked` so existing scripts and reproducibility recipes
+written against v1.2.1 produce identical numbers without any flag
+change.
+
+```bash
+# v1.2.1 baseline (no flag needed):
+.venv/bin/python -m benchmarks.longmemeval.harness --profile chat_turn
+
+# fix-02 / LME-012 ranking — gate-aware A@k:
+.venv/bin/python -m benchmarks.longmemeval.harness \
+    --profile chat_turn --scorer composite_ranked
+```
+
+The same `--scorer` flag is accepted by
+`benchmarks.longmemeval.token_efficiency`; it is recorded in the output
+JSON's `config` block for audit but is informational on that surface
+(the token-efficiency calculation already operates on the
+AURORA-approved set, regardless of scorer choice).
 
 ## How long it takes
 
@@ -112,13 +144,18 @@ haystack size, dominated by ECLIPSE+QUASAR sweeps over all retrieved entries.
 
 ## Files
 
-| File                       | Purpose                                                 |
-| -------------------------- | ------------------------------------------------------- |
-| `harness.py`               | Runner: builds pipeline per question, ingests, scores   |
-| `loader.py`                | Loads `longmemeval_oracle.json` into typed dataclasses  |
-| `scorer.py`                | Per-question scoring (sR@k, tR@k, A@k, abstention)     |
-| `v1.0-cold-results.md`     | The canonical v1.0 cold-run report                      |
-| `README.md`                | This file                                               |
+| File                                | Purpose                                                  |
+| ----------------------------------- | -------------------------------------------------------- |
+| `harness.py`                        | Runner: builds pipeline per question, ingests, scores    |
+| `loader.py`                         | Loads `longmemeval_oracle.json` into typed dataclasses   |
+| `scorer.py`                         | Re-export shim (preserves the v1.2.1 public symbols)     |
+| `scorers/__init__.py`               | Scorer dispatcher (`get_ranker`, `RANKERS`, default)     |
+| `scorers/retrieval_ranked.py`       | Default scorer — ranks by `retrieval_score` descending    |
+| `scorers/composite_ranked.py`       | LME-012 scorer — ranks by `retrieval_score × aurora_weight` |
+| `token_efficiency.py`               | Token-payload measurement vs naïve passthrough           |
+| `heldout_guard.py`                  | Day-5 marker fence around the held-out partition         |
+| `v1.0-cold-results.md`              | The canonical v1.0 cold-run report                       |
+| `README.md`                         | This file                                                |
 
 ## Known blockers / caveats
 
