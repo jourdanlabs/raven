@@ -1,0 +1,10 @@
+name: factual
+description: |
+  v1.0 default calibration profile. Tuned for fact-style memory entries
+  (MUNINN-style: structured assertions, decision records, identity
+  statements). Preserves backward compatibility with all v1.0 callers
+  who do not specify a profile.
+
+  This profile is the baseline for every Phase 2.x experiment. DO NOT
+  tune these values — change new profiles instead.
+aurora_threshold: 0.80

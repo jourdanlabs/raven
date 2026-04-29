@@ -9,3 +9,12 @@ build/
 .env
 *.db
 *.sqlite3
+
+# Phase 2.1 LongMemEval partitions: NOT vendored (~14 MB total). Regenerate
+# locally with `python -m benchmarks.longmemeval.split --write-doc`. The
+# SHA-256 receipts in benchmarks/longmemeval/phase2.1_split.md are the
+# canonical reference; the .json files are caches.
+benchmarks/longmemeval/calibration.json
+benchmarks/longmemeval/heldout.json
+# Day 5 marker file — created locally via heldout_guard.mark_phase_complete().
+benchmarks/longmemeval/.phase2.1_complete
