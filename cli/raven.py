@@ -145,6 +145,44 @@ def remember(text: str, db: str, source: str, supersedes: str | None) -> None:
     _print(f"{GR}✓{Z} Stored memory {D}{entry_id}{Z}")
 
 
+@main.command("refusal-types")
+@click.option("--json", "as_json", is_flag=True, help="Output JSON instead of formatted table.")
+def refusal_types(as_json: bool) -> None:
+    """List the structured refusal types RAVEN can produce.
+
+    Each row shows the refusal ``type`` (the value on
+    :class:`raven.types.RefusalReason.type`), its recommended downstream
+    action, and a one-line summary of when this refusal fires. Use this
+    to write router code in your agent loop. See
+    ``docs/refusal_cookbook.md`` for runnable handler examples.
+    """
+    rows = [
+        ("scope_violation", "escalate",
+         "Query has tokens outside the operator-defined scope allowlist."),
+        ("identity_ambiguous", "ask_user",
+         "METEOR found multiple plausible entity candidates; pick one."),
+        ("conflicting_evidence_unresolvable", "surface_uncertainty",
+         "PULSAR found contradictions reconciliation could not resolve."),
+        ("staleness_threshold_exceeded", "request_context",
+         "Every candidate decayed below the ECLIPSE floor."),
+        ("insufficient_evidence", "ask_user",
+         "Fallback: no other category matched; evidence is too thin."),
+    ]
+    if as_json:
+        click.echo(json.dumps(
+            [{"type": t, "recommended_action": a, "fires_when": d} for t, a, d in rows],
+            indent=2,
+        ))
+        return
+
+    _print(f"\n{G}RAVEN{Z} - Structured Refusal Types\n")
+    _print(f"  {T}{'TYPE':<38}{'ACTION':<22}WHEN IT FIRES{Z}")
+    _print(D + "-" * 100 + Z)
+    for t, a, d in rows:
+        _print(f"  {GR}{t:<38}{Z}{T}{a:<22}{Z}{d}")
+    _print(f"\n{D}See docs/refusal_cookbook.md for runnable handler examples.{Z}\n")
+
+
 @main.command()
 @click.argument("jsonl_file", type=click.Path(exists=True))
 @click.option("--db", default=_DEFAULT_DB)
