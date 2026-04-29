@@ -5,21 +5,29 @@ all upstream engines. Approves, conditionally approves, or refuses the
 full response based on thresholds.
 
 Hard rules:
-  - If an entry is superseded and stale → REJECT (confidence 0.0)
-  - If overall_confidence < REFUSE_THRESHOLD and no entries approved → REFUSE
-  - If overall_confidence >= APPROVE_THRESHOLD → APPROVED
-  - If APPROVE_THRESHOLD > overall_confidence >= CONDITIONAL_THRESHOLD → CONDITIONAL
-  - Otherwise → REJECTED
+  - If an entry is superseded and stale -> REJECT (confidence 0.0)
+  - If overall_confidence < REFUSE_THRESHOLD and no entries approved -> REFUSE
+  - If overall_confidence >= APPROVE_THRESHOLD -> APPROVED
+  - If APPROVE_THRESHOLD > overall_confidence >= CONDITIONAL_THRESHOLD -> CONDITIONAL
+  - Otherwise -> REJECTED
+
+Capability 1.3 adds :func:`validate_aurora_v2` — an optional companion to
+:func:`run_aurora` that returns an :class:`AuroraVerdict` with a typed
+:class:`RefusalReason` on refusal. The v1.0 entrypoint is unchanged.
 """
 from __future__ import annotations
 
+import hashlib
+
 from raven.types import (
     AuroraInput,
+    AuroraVerdict,
     CausalEdge,
     Contradiction,
     MemoryEntry,
     PipelineTrace,
     RavenResponse,
+    RefusalReason,
     ScoredMemory,
 )
 
@@ -140,4 +148,112 @@ def run_aurora(inp: AuroraInput, trace: PipelineTrace) -> RavenResponse:
         flagged_contradictions=inp.contradictions,
         rejected_memories=rejected,
         pipeline_trace=trace,
+    )
+
+
+# -- Phase 1 capability path: validate_aurora_v2 -> AuroraVerdict ------------
+
+
+def _verdict_audit_hash(
+    decision: str,
+    confidence: float,
+    refusal_reason: RefusalReason | None,
+    contributing_engines: list[str],
+) -> str:
+    """SHA-256 over (decision, confidence rounded to 6 dp, refusal hash if
+    any, sorted contributing_engines).
+
+    Resolved-claims and decay-applied are not yet wired into the v2 path
+    (Sub A and Sub B own those surfaces); when they land we extend this
+    hash to include their audit_hashes and policy names per the
+    AuroraVerdict docstring.
+    """
+    h = hashlib.sha256()
+    h.update(decision.encode("utf-8"))
+    h.update(b"\x1f")
+    h.update(f"{confidence:.6f}".encode("utf-8"))
+    h.update(b"\x1f")
+    h.update((refusal_reason.audit_hash if refusal_reason else "").encode("utf-8"))
+    h.update(b"\x1f")
+    for engine in sorted(contributing_engines):
+        h.update(engine.encode("utf-8"))
+        h.update(b"\x1e")
+    return h.hexdigest()
+
+
+def validate_aurora_v2(
+    aurora_input: AuroraInput,
+    *,
+    threshold: float = APPROVE_THRESHOLD,
+    scope_allowlist: list[str] | None = None,
+    query: str = "",
+    resolved_claim_count: int = 0,
+    contributing_engines: list[str] | None = None,
+) -> AuroraVerdict:
+    """Phase 1 capability path. Returns an :class:`AuroraVerdict`.
+
+    Co-exists with :func:`run_aurora` — the v1.0 entrypoint is unchanged
+    and continues to return :class:`RavenResponse`. New callers that want
+    typed refusal reasons consume :class:`AuroraVerdict` from this
+    function.
+
+    Decision rule mirrors v1.0:
+      - At least one approved entry whose composite >= ``threshold`` =>
+        ``decision="approve"``.
+      - Otherwise => ``decision="refuse"`` with a typed
+        :class:`RefusalReason` produced by
+        :func:`raven.refusal.classify_refusal`.
+
+    The ``confidence`` field on the verdict is the mean composite score of
+    approved entries (matching v1.0 ``overall_confidence``) on approve, or
+    the mean composite of rejected entries (matching v1.0 fallback) on
+    refuse.
+
+    ``contributing_engines`` is recorded on the verdict so downstream
+    audit consumers can see which engines ran. Pipeline callers populate
+    this from :class:`PipelineTrace`. Direct callers can pass an explicit
+    list.
+    """
+    # Local import to avoid circular dependency at module load time.
+    from raven.refusal import classify_refusal
+
+    approved, rejected = gate(aurora_input)
+
+    if approved:
+        confidence = sum(s.score for s in approved) / len(approved)
+    elif rejected:
+        confidence = sum(s.score for s in rejected) / len(rejected)
+    else:
+        confidence = 0.0
+
+    engines = list(contributing_engines) if contributing_engines else []
+
+    if approved and confidence >= threshold:
+        audit = _verdict_audit_hash("approve", confidence, None, engines)
+        return AuroraVerdict(
+            decision="approve",
+            confidence=confidence,
+            refusal_reason=None,
+            resolved_claims=[],
+            decay_applied=[],
+            audit_hash=audit,
+            contributing_engines=engines,
+        )
+
+    refusal = classify_refusal(
+        query=query,
+        aurora_input=aurora_input,
+        aurora_threshold=threshold,
+        scope_allowlist=scope_allowlist,
+        resolved_claim_count=resolved_claim_count,
+    )
+    audit = _verdict_audit_hash("refuse", confidence, refusal, engines)
+    return AuroraVerdict(
+        decision="refuse",
+        confidence=confidence,
+        refusal_reason=refusal,
+        resolved_claims=[],
+        decay_applied=[],
+        audit_hash=audit,
+        contributing_engines=engines,
     )

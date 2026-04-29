@@ -1,0 +1,52 @@
+{
+  "corpus_path": "/Users/sokpyeon/projects/raven_wt_1.3/corpus/refusal_benchmark/queries.jsonl",
+  "corpus_sha256": "c17b67b1167f30beb824587d2af66ff72ac27adfbb7894f2cc5a2e711042f9b0",
+  "n_queries": 200,
+  "results": {
+    "LLM-judge": {
+      "correct": 45,
+      "latency_seconds": 5.51670091226697e-05,
+      "n": 200,
+      "refusal_accuracy": 1.0,
+      "refusal_precision": 0.225,
+      "refusal_recall_per_type": {
+        "conflicting_evidence_unresolvable": 0.175,
+        "identity_ambiguous": 0.175,
+        "insufficient_evidence": 0.175,
+        "scope_violation": 0.35,
+        "staleness_threshold_exceeded": 0.25
+      },
+      "refused": 200
+    },
+    "RAVEN_v1": {
+      "correct": 40,
+      "latency_seconds": 1.950003206729889e-05,
+      "n": 200,
+      "refusal_accuracy": 1.0,
+      "refusal_precision": 0.2,
+      "refusal_recall_per_type": {
+        "conflicting_evidence_unresolvable": 0.0,
+        "identity_ambiguous": 0.0,
+        "insufficient_evidence": 1.0,
+        "scope_violation": 0.0,
+        "staleness_threshold_exceeded": 0.0
+      },
+      "refused": 200
+    },
+    "RAVEN_v2": {
+      "correct": 200,
+      "latency_seconds": 0.5933653340325691,
+      "n": 200,
+      "refusal_accuracy": 1.0,
+      "refusal_precision": 1.0,
+      "refusal_recall_per_type": {
+        "conflicting_evidence_unresolvable": 1.0,
+        "identity_ambiguous": 1.0,
+        "insufficient_evidence": 1.0,
+        "scope_violation": 1.0,
+        "staleness_threshold_exceeded": 1.0
+      },
+      "refused": 200
+    }
+  }
+}
