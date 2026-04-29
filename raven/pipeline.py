@@ -62,7 +62,47 @@ class RAVENPipeline:
         self._meteor = meteor_config or meteor.METEORConfig()
         self.calibration_profile = profile
 
-    def recall(self, query: str) -> RavenResponse:
+    def recall(
+        self,
+        query: str,
+        *,
+        now: float | None = None,
+    ) -> RavenResponse:
+        """Run the full RAVEN recall pipeline against ``query``.
+
+        Parameters
+        ----------
+        query
+            The user's query string.
+        now
+            **Corpus-relative reference time** (Unix epoch seconds) used by
+            ECLIPSE for the decay computation and by QUASAR for any
+            time-aware importance signals.
+
+            When ``None`` (the default) RAVEN uses ``time.time()`` — this
+            preserves v1.0 / v1.1 behaviour bit-for-bit.
+
+            When supplied, RAVEN computes decay relative to ``now`` instead
+            of wall-clock. This is useful in two distinct scenarios:
+
+            1. **Benchmark fairness.** Corpora whose ingest timestamps are
+               systematically older than the recall machine's clock (e.g.
+               LongMemEval haystacks dated 2023-2024 replayed in 2026)
+               otherwise see decay weights pinned at ~1e-7, which collapses
+               the AURORA composite below any threshold that preserves
+               approval quality. Passing ``now=question_timestamp`` makes
+               decay reflect the corpus's own time origin.
+            2. **Production historical backfill.** A caller restoring
+               archived chat data into a fresh RAVEN store can pass
+               ``now=session_end_time`` so decay reflects the session's
+               relative age, not the wall-clock gap to the backfill run.
+
+            This parameter is **fairness, not target-fixing**: the same
+            arithmetic applies to any deployment whose ingest timestamps
+            are older than recall time. See
+            ``docs/phase2.2/fixes/01_now_override.md`` for the full
+            motivation + benchmark receipts.
+        """
         t_start = time.perf_counter()
 
         trace = PipelineTrace(notes=[query])
@@ -96,7 +136,10 @@ class RAVENPipeline:
         trace.nova_edges = len(causal_edges)
 
         # -- ECLIPSE --
-        now = time.time()
+        # ``now`` is corpus-relative when the caller supplies it; otherwise
+        # we fall back to wall-clock for v1.0 / v1.1 byte-for-byte
+        # compatibility.
+        now = now if now is not None else time.time()
         decayed = eclipse.apply_decay(entries, self.half_life_days, now)
         decay_weights = [w for _, w in decayed]
         stale_ids = eclipse.find_superseded(entries)
@@ -204,6 +247,8 @@ class RAVENPipeline:
         self,
         query: str,
         scope_allowlist: list[str] | None = None,
+        *,
+        now: float | None = None,
     ) -> AuroraVerdict:
         """Phase 1 capability pipeline. Same flow as :meth:`recall` but
         routes the final stage through
@@ -217,6 +262,10 @@ class RAVENPipeline:
         refused with ``type="scope_violation"`` *before* any retrieval
         happens — RAVEN should not consult evidence for queries it is
         not authorized to answer.
+
+        The ``now`` parameter is the same corpus-relative reference time
+        described on :meth:`recall`. Default ``None`` preserves v1.0 /
+        v1.1 / capability-1.3 behaviour bit-for-bit.
         """
         t_start = time.perf_counter()
         trace = PipelineTrace(notes=[query])
@@ -282,8 +331,8 @@ class RAVENPipeline:
         causal_edges = nova.build_causal_graph(entries)
         trace.nova_edges = len(causal_edges)
 
-        # ECLIPSE
-        now = time.time()
+        # ECLIPSE — corpus-relative time when the caller supplies ``now``.
+        now = now if now is not None else time.time()
         decayed = eclipse.apply_decay(entries, self.half_life_days, now)
         decay_weights = [w for _, w in decayed]
         stale_ids = eclipse.find_superseded(entries)
