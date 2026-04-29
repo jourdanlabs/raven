@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.07,
+    "min": 0.03
+  },
+  "horizon": "5y",
+  "horizon_seconds": 157680000,
+  "id": "transactional__5y__04",
+  "memory_class": "transactional",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "Invoiced $1200 to client A.",
+  "query": "Who was billed?",
+  "target_memory_id": "mem-transactional-5y-04"
+}

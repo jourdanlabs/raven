@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 0.17,
+    "min": 0.13
+  },
+  "horizon": "1m",
+  "horizon_seconds": 2592000,
+  "id": "contextual__1m__06",
+  "memory_class": "contextual",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "The CTO is travelling this week.",
+  "query": "Who is travelling?",
+  "target_memory_id": "mem-contextual-1m-06"
+}

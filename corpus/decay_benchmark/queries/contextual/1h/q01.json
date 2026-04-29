@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.975883
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "contextual__1h__01",
+  "memory_class": "contextual",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "It's raining in the city.",
+  "query": "What is the weather context?",
+  "target_memory_id": "mem-contextual-1h-01"
+}

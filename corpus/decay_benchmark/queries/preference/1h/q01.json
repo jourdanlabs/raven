@@ -1,0 +1,14 @@
+{
+  "expected_band": {
+    "max": 1.0,
+    "min": 0.979679
+  },
+  "horizon": "1h",
+  "horizon_seconds": 3600,
+  "id": "preference__1h__01",
+  "memory_class": "preference",
+  "memory_confidence_at_ingest": 1.0,
+  "memory_text": "My favourite editor is Vim.",
+  "query": "What is my favourite editor?",
+  "target_memory_id": "mem-preference-1h-01"
+}

@@ -212,5 +212,158 @@ def ingest(jsonl_file: str, db: str) -> None:
     _print(f"{GR}✓{Z} Ingested {count:,} memories from {jsonl_file}")
 
 
+# ── Capability 1.2 — decay & migration sub-commands ────────────────────────
+
+
+@main.group()
+def decay() -> None:
+    """Inspect and manage class-aware decay policies (Capability 1.2)."""
+
+
+@decay.command("list-policies")
+@click.option("--json", "as_json", is_flag=True, help="Output JSON instead of a table.")
+def decay_list_policies(as_json: bool) -> None:
+    """List all currently registered DecayPolicy objects."""
+    from raven.decay import list_decay_policies
+
+    policies = list_decay_policies()
+    if as_json:
+        click.echo(json.dumps(
+            [
+                {
+                    "name": p.name,
+                    "applies_to_class": p.applies_to_class,
+                    "half_life_seconds": p.half_life_seconds,
+                    "floor_confidence": p.floor_confidence,
+                }
+                for p in policies
+            ],
+            indent=2,
+        ))
+        return
+    _print(f"\n{G}* RAVEN{Z} - Registered DecayPolicies\n")
+    _print(f"  {T}{'NAME':<18}{'CLASS':<18}{'HALF-LIFE':<18}FLOOR{Z}")
+    _print(D + "-" * 70 + Z)
+    for p in policies:
+        hl = "no decay" if p.half_life_seconds is None else f"{p.half_life_seconds:.0f}s"
+        _print(f"  {GR}{p.name:<18}{Z}{T}{p.applies_to_class:<18}{Z}{hl:<18}{p.floor_confidence}")
+    _print("")
+
+
+@decay.command("show-policy")
+@click.argument("name")
+def decay_show_policy(name: str) -> None:
+    """Print one DecayPolicy by memory-class name."""
+    from raven.decay import get_decay_policy
+
+    try:
+        p = get_decay_policy(name)
+    except KeyError as exc:
+        _print(f"{R}x{Z} {exc}")
+        sys.exit(1)
+    click.echo(json.dumps(
+        {
+            "name": p.name,
+            "applies_to_class": p.applies_to_class,
+            "half_life_seconds": p.half_life_seconds,
+            "floor_confidence": p.floor_confidence,
+        },
+        indent=2,
+    ))
+
+
+@decay.command("register-policy")
+@click.argument("name")
+@click.argument("half_life_seconds", type=float)
+@click.argument("floor", type=float)
+@click.argument("memory_class")
+def decay_register_policy(
+    name: str, half_life_seconds: float, floor: float, memory_class: str
+) -> None:
+    """Register a custom DecayPolicy at runtime (process-local).
+
+    Pass ``-1`` for HALF_LIFE_SECONDS to register a no-decay policy
+    (mapped to None internally).
+    """
+    from raven.decay import register_decay_policy
+    from raven.types import DecayPolicy
+
+    hl = None if half_life_seconds < 0 else half_life_seconds
+    policy = DecayPolicy(
+        name=name,
+        half_life_seconds=hl,
+        floor_confidence=floor,
+        applies_to_class=memory_class,
+    )
+    try:
+        register_decay_policy(policy)
+    except (TypeError, ValueError) as exc:
+        _print(f"{R}x{Z} {exc}")
+        sys.exit(1)
+    _print(f"{GR}+{Z} Registered DecayPolicy {D}{name}{Z} for class {T}{memory_class}{Z}")
+
+
+@main.group()
+def migrate() -> None:
+    """Run / inspect storage migrations (Capability 1.2)."""
+
+
+@migrate.command("run")
+@click.option("--db", default=_DEFAULT_DB)
+def migrate_run(db: str) -> None:
+    """Apply Capability 1.2 schema migration + heuristic backfill.
+
+    Requires ``RAVEN_RUN_MIGRATIONS=1`` in the environment as a safety
+    interlock - the v0 default is opt-in. (Phase 2 will flip the default.)
+    """
+    if os.environ.get("RAVEN_RUN_MIGRATIONS") != "1":
+        _print(
+            f"{R}x{Z} Refusing to migrate: set RAVEN_RUN_MIGRATIONS=1 to confirm.\n"
+            f"  {D}This is the v0 opt-in safety interlock.{Z}"
+        )
+        sys.exit(2)
+    if not os.path.exists(db):
+        _print(f"{R}x{Z} No database at {db}")
+        sys.exit(1)
+
+    from raven.storage.migrations import run_migrations
+
+    result = run_migrations(db)
+    _print(f"\n{G}* RAVEN{Z} - Migration complete\n")
+    _print(f"  {T}schema_changed:{Z}     {result.schema_changed}")
+    _print(f"  {T}rows_total:{Z}         {result.rows_total}")
+    _print(f"  {T}rows_classified:{Z}    {result.rows_classified}")
+    _print(f"  {T}review_required:{Z}    {result.rows_review_required}")
+    if result.by_class:
+        _print(f"\n  {T}by class:{Z}")
+        for cls, n in sorted(result.by_class.items()):
+            _print(f"    {GR}{cls:<18}{Z} {n}")
+    if result.review_sample:
+        _print(f"\n  {T}review sample (first {len(result.review_sample)}):{Z}")
+        for row in result.review_sample[:5]:
+            _print(f"    {D}- {row['id']} [{row['assigned_class']} @ {row['confidence']}]: {row['text'][:80]}{Z}")
+    _print("")
+
+
+@migrate.command("review-queue")
+@click.option("--db", default=_DEFAULT_DB)
+@click.option("--limit", default=50, help="Max rows to show.")
+def migrate_review_queue(db: str, limit: int) -> None:
+    """List rows that the migration flagged ``review_required = 1``."""
+    if not os.path.exists(db):
+        _print(f"{R}x{Z} No database at {db}")
+        sys.exit(1)
+    from raven.storage.migrations import review_queue
+
+    rows = review_queue(db, limit=limit)
+    if not rows:
+        _print(f"{GR}+{Z} Review queue empty")
+        return
+    _print(f"\n{G}* RAVEN{Z} - Review queue ({len(rows)} rows)\n")
+    for row in rows:
+        _print(f"  {T}[{row['memory_class']}]{Z} {row['id']}: {D}{(row['text'] or '')[:140]}{Z}")
+    _print("")
+
+
 if __name__ == "__main__":
     main()

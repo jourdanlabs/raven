@@ -105,6 +105,70 @@ with 30-day-old decay. Addressed in GAPS-002 tracking item.
 
 ---
 
+## Capability 1.2 - Decay-Aware Recall (sub-agent B, 2026-04-27)
+
+### DEC-001 - Heuristic classifier is regex-only
+`raven.storage.migrations.classify_text` uses regexes + token lists to
+backfill `memory_class` for legacy rows. It misses semantic patterns
+(e.g. "the project codename is RAVEN" lands as `factual_long` but is
+arguably identity-adjacent). The migration intentionally flags every
+sub-threshold classification with `review_required = 1` so an operator
+can fix them; long-term we should swap in an embedding-based classifier
+(or an LLM judge with confidence calibration). The structure is in
+place - `classify_text` is the only swap point.
+
+**Impact:** Low for fresh installs (new entries get the right class at
+ingest time). Medium for legacy v1.0 corpora - operator review is the
+mitigation until an embedding classifier lands.
+
+### DEC-002 - `raven/types.py` legacy module shadowed by `raven/types/` package
+Step 0 introduced the `raven/types/` package but did not delete the
+top-level `raven/types.py` module. Python's package-over-module
+precedence means the package wins and the .py file is dead code, but
+it shows up in coverage reports as 0% covered. Cleanup is out of scope
+for Capability 1.2 (types/ is locked); recommend a one-line cleanup PR
+after Phase 1 sub-agents merge.
+
+**Impact:** Cosmetic. No functional consequence.
+
+### DEC-003 - MemPalace + LLM-judge baselines are stubs
+`corpus/decay_benchmark/scoring/run_baselines.py` ships
+`baseline_mempalace_stub` (constant 0.5) and `baseline_llm_judge_stub`
+(deterministic-seed random in [floor, 1.0]). They produce honest 0% /
+~10% scores and are structured for swap-in once real implementations
+exist. Documented in the file header so reviewers don't mistake them
+for tuned baselines.
+
+**Impact:** Low. The relative ranking against `no_decay` /
+`uniform_decay` / `raven_v2` is still meaningful, and the stub presence
+is loud in the JSON output.
+
+### DEC-004 - Migration is opt-in for v0
+`run_migrations()` only runs automatically on `RAVENStore` construction
+when `RAVEN_RUN_MIGRATIONS=1` is set. The CLI's `raven migrate run`
+also requires the flag as a safety interlock. Phase 2 should flip the
+default and add a `raven migrate dry-run` to preview the backfill
+before committing.
+
+**Impact:** Low. Operator awareness - documented in CLI help text.
+
+### DEC-005 - `confidence_at_ingest` multiplies the curve
+`class_aware_weight` does `confidence_at_ingest * 0.5 ** (age / hl)`
+floored at the policy floor. A 0.5-confidence-at-ingest entry can
+therefore never exceed 0.5 even when fresh (modulo the floor). This
+is the spec'd behaviour but worth flagging because future tuning of
+QUASAR's importance scoring needs to compose with it.
+
+**Impact:** None today; flagged for Phase 2 tuning.
+
+| ID       | Area      | Description                                                                    |
+| -------- | --------- | ------------------------------------------------------------------------------ |
+| DEC-001  | Migrate   | Replace regex classifier in `classify_text` with embedding-based classifier    |
+| DEC-002  | Cleanup   | Delete dead `raven/types.py` module (cleanup PR after Phase 1 merges)          |
+| DEC-003  | Baselines | Replace MemPalace + LLM-judge stubs in DECAY scoring harness                   |
+| DEC-004  | Migrate   | Flip `RAVEN_RUN_MIGRATIONS` default in Phase 2; add `raven migrate dry-run`    |
+| DEC-005  | Decay     | Document/tune interaction between `confidence_at_ingest` and class-aware floor |
+
 ## Capability 1.3 — Structured Refusal (added in this sub-agent's PR)
 
 ### Reconciliation handshake is loosely coupled
